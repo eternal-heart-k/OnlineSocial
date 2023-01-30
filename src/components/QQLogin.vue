@@ -1,0 +1,25 @@
+<template>
+  <img id="qq_login_img" src="../assets/logo.png" alt="qq" @click="qq_login('hhh', $event)">
+</template>
+
+<script>
+export default {
+  name: 'QQLogin',
+  methods: {
+    qq_login(message, event) {
+      // 这里可以访问 DOM 原生事件
+      if (event) {
+        event.preventDefault();
+      }
+      alert(message);
+  }
+}
+}
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+#qq_login_img {
+  cursor: pointer;
+}
+</style>
