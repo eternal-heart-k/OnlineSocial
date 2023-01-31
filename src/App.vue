@@ -1,15 +1,9 @@
 <template>
-  <QQLogin />
+  <router-view :key="$route.fullPath" />
 </template>
 
 <script>
-import QQLogin from './components/QQLogin.vue'
-
 export default {
-  name: 'App',
-  components: {
-    QQLogin
-  }
 }
 </script>
 
