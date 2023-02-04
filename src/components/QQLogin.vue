@@ -3,19 +3,33 @@
 </template>
 
 <script>
+import { useStore } from 'vuex';
+import router from '@/router';
 
 export default {
   name: 'QQLogin',
-  methods: {
-    qq_login(event) {
+  setup() {
+    const store = useStore();
+    const qq_login = (event) => {  
       // 这里可以访问 DOM 原生事件
       if (event) {
         event.preventDefault();
       }
       console.log(event);
-      this.$router.push({name: 'home'});
+      store.dispatch("login", {
+          success(resp) {
+            router.push({name: 'home'});
+            console.log(resp);
+          },
+          error() {
+            console.log("失败了")
+          },
+      });
+    };
+    return {
+      qq_login,
     }
-}
+  },
 }
 </script>
 
