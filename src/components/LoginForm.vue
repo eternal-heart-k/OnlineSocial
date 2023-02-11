@@ -1,8 +1,8 @@
 <template>
-    <form class="login_form">
+    <form class="login_form" @submit.prevent>
         <div class="login_select">
-            <a href="javascript:void(0)" class="login_select_type account_type" @click="accountType()">密码登录</a>
-            <a href="javascript:void(0)" class="login_select_type verification_code_type" @click="verificationCodeType()">验证码登录</a>
+            <a href="javascript:void(0)" class="login_select_type account_type" @click="accountType">密码登录</a>
+            <a href="javascript:void(0)" class="login_select_type verification_code_type" @click="verificationCodeType">验证码登录</a>
         </div>
         <div class="login_body">
             <div class="inputBox login_phone_number">
@@ -19,24 +19,24 @@
                     <span>验证码</span>
                 </div>
                 <div class="inputBox login_get_verification_code">
-                    <input type="button" v-model="get_verification_code_text" class="btn login_get_verification_code_btn" @click="getVerificationCode()">
+                    <input type="button" v-model="get_verification_code_text" class="btn login_get_verification_code_btn" @click="getVerificationCode">
                 </div>
             </div>
             <div class="errormsg login_errormsg">账号或密码错误</div>
         </div>
         <div class="login_footer">
-            <button class="btn login_confirm_btn" @click="login()">登录</button>
+            <button class="btn login_confirm_btn" @click="login">登录</button>
             <div class="forgetpassword_register">
                 <div class="btn btn_link forget_password">
-                    <a class="forget_password_btn" @click="forgetPassword()">忘记密码</a>
+                    <a class="forget_password_btn" @click="forgetPassword">忘记密码</a>
                 </div>
                 <div class="btn btn_link register">
-                    <a class="register_btn" @click="register()">注册</a>
+                    <a class="register_btn" @click="register">注册</a>
                 </div>
             </div>
             <div class="login_quickly">
                 <div>
-                    <img class="btn login_qq_image" src="../assets/qq.jpg" alt="QQ图标" @click="qqLogin()">
+                    <img class="btn login_qq_image" src="../assets/qq.jpg" alt="QQ图标" @click="qqLogin">
                 </div>
                 <div class="login_quickly_title">
                     <a class="btn_link">&nbsp;&nbsp;快速登录</a>
@@ -72,6 +72,8 @@ export default {
             login_phone_number_value.value = "";
             login_password_value.value = "";
             login_verification_code_value.value = "";
+            $('.login_password>input')[0].setAttribute("required", "required");
+            $('.login_verification_code>input').removeAttr("required");
         };
         const verificationCodeType = () => {
             $('.login_password').hide();
@@ -81,6 +83,8 @@ export default {
             login_phone_number_value.value = "";
             login_password_value.value = "";
             login_verification_code_value.value = "";
+            $('.login_verification_code>input')[0].setAttribute("required", "required");
+            $('.login_password>input').removeAttr("required");
         };
         const login = () => {
             console.log(login_phone_number_value.value, login_password_value.value, login_verification_code_value.value);
@@ -126,7 +130,6 @@ export default {
         }
     }
 }
-
 </script>
 
 <style scoped>

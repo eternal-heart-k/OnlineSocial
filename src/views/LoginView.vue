@@ -30,6 +30,7 @@ export default {
             $('.login_verification_code_module').hide();
             $('.forget_password_form').hide();
             $('.register_form').hide();
+            $('.login_verification_code>input').removeAttr("required");
         };
         return {
             hideSth,

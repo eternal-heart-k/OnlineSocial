@@ -1,38 +1,39 @@
 <template>
-    <form class="register_form">
+    <form class="register_form" @submit.prevent>
         <div class="register_body">
             <div class="inputBox register_phone_number">
-                <input type="text" required="required">
+                <input v-model="register_phone_number_value" type="text" required="required">
                 <span>手机号</span>
             </div>
             <div class="inputBox register_password">
-                <input type="password" required="required">
+                <input v-model="register_password_value" type="password" required="required">
                 <span>密码</span>
             </div>
             <div class="inputBox register_password_confirm">
-                <input type="password" required="required">
+                <input v-model="register_password_confirm_value" type="password" required="required">
                 <span>确认密码</span>
             </div>
             <div class="register_verification_code_module">
                 <div class="inputBox register_verification_code">
-                    <input type="text" required="required">
+                    <input v-model="register_verification_code_value" type="text" required="required">
                     <span>验证码</span>
                 </div>
                 <div class="inputBox register_get_verification_code">
-                    <input type="button" v-model="get_verification_code_text" class="btn register_get_verification_code_btn" @click="getVerificationCode()">
+                    <input type="button" v-model="get_verification_code_text" class="btn register_get_verification_code_btn" @click="getVerificationCode">
                 </div>
             </div>
             <div class="errormsg register_errormsg">账号或密码错误</div>
         </div>
         <div class="register_footer">
-            <button class="btn register_confirm_btn" @click="registerConfirm()">注册</button>
-            <a class="btn btn_link return_login_btn" @click="returnLogin()">登录</a>
+            <button class="btn register_confirm_btn" @click="registerConfirm">注册</button>
+            <a class="btn btn_link return_login_btn" @click="returnLogin">登录</a>
         </div>
     </form>
 </template>
 
 <script>
 import $ from 'jquery';
+import { ref } from 'vue';
 import { getCurrentInstance } from 'vue';
 
 export default {
@@ -43,6 +44,10 @@ export default {
         }
     },
     setup() {
+        let register_phone_number_value = ref('');
+        let register_password_value = ref('');
+        let register_password_confirm_value = ref('');
+        let register_verification_code_value = ref('');
         const datab = getCurrentInstance();
         const getVerificationCode = () => {
             let tm = 60;
@@ -60,9 +65,10 @@ export default {
             }, 1000);
         }
         const registerConfirm = () => {
+            console.log(register_phone_number_value.value, register_password_value.value, register_password_confirm_value.value, register_verification_code_value.value);
             // 注册成功
-            $('.register_form').hide();
-            $('.login_form').show();
+            // $('.register_form').hide();
+            // $('.login_form').show();
         };
         const returnLogin = () => {
             $('.register_form').hide();
@@ -72,6 +78,10 @@ export default {
             getVerificationCode,
             registerConfirm,
             returnLogin,
+            register_phone_number_value,
+            register_password_value,
+            register_password_confirm_value,
+            register_verification_code_value,
         }
     }
 }

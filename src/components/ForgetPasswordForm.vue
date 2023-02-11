@@ -1,34 +1,35 @@
 <template>
-    <form class="forget_password_form">
+    <form class="forget_password_form" @submit.prevent>
         <div class="forget_password_body">
             <div class="inputBox forget_password_phone_number">
-                <input type="text" required="required">
+                <input v-model="forget_password_phone_number_value" type="text" required="required">
                 <span>手机号</span>
             </div>
             <div class="inputBox forget_password_new_password">
-                <input type="password" required="required">
+                <input v-model="forget_password_new_password_value" type="password" required="required">
                 <span>新密码</span>
             </div>
             <div class="forget_password_verification_code_module">
                 <div class="inputBox forget_password_verification_code">
-                    <input type="text" required="required">
+                    <input v-model="forget_password_verification_code_value" type="text" required="required">
                     <span>验证码</span>
                 </div>
                 <div class="inputBox forget_password_get_verification_code">
-                    <input type="button" v-model="get_verification_code_text" class="btn forget_password_get_verification_code_btn" @click="getVerificationCode()">
+                    <input type="button" v-model="get_verification_code_text" class="btn forget_password_get_verification_code_btn" @click="getVerificationCode">
                 </div>
             </div>
             <div class="errormsg forget_password_errormsg">账号或密码错误</div>
         </div>
         <div class="forget_password_footer">
-            <button class="btn forget_password_confirm_btn" @click="forgetPasswordConfirm()">确认</button>
-            <a class="btn btn_link return_login_btn" @click="returnLogin()">登录</a>
+            <button class="btn forget_password_confirm_btn" @click="forgetPasswordConfirm">确认</button>
+            <a class="btn btn_link return_login_btn" @click="returnLogin">登录</a>
         </div>
     </form>
 </template>
 
 <script>
 import $ from 'jquery';
+import { ref } from 'vue';
 import { getCurrentInstance } from 'vue';
 
 export default {
@@ -39,6 +40,9 @@ export default {
         }
     },
     setup() {
+        let forget_password_phone_number_value = ref('');
+        let forget_password_new_password_value = ref('');
+        let forget_password_verification_code_value = ref('');
         const datab = getCurrentInstance();
         const getVerificationCode = () => {
             let tm = 60;
@@ -56,8 +60,9 @@ export default {
             }, 1000);
         };
         const forgetPasswordConfirm = () => {
-            $('.forget_password_form').hide();
-            $('.login_form').show();
+            console.log(forget_password_phone_number_value.value, forget_password_new_password_value.value, forget_password_verification_code_value.value);
+            // $('.forget_password_form').hide();
+            // $('.login_form').show();
         };
         const returnLogin = () => {
             $('.forget_password_form').hide();
@@ -67,6 +72,9 @@ export default {
             getVerificationCode,
             forgetPasswordConfirm,
             returnLogin,
+            forget_password_phone_number_value,
+            forget_password_new_password_value,
+            forget_password_verification_code_value,
         }
     }
 }
