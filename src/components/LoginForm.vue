@@ -65,6 +65,8 @@ export default {
         let login_password_value = ref('');
         let login_verification_code_value = ref('');
         const accountType = () => {
+            $('.login_password>input')[0].setAttribute("required", "required");
+            $('.login_verification_code>input').removeAttr("required");
             $('.login_verification_code_module').hide();
             $('.login_password').show();
             $('.verification_code_type').css("border-bottom", "none");
@@ -72,10 +74,10 @@ export default {
             login_phone_number_value.value = "";
             login_password_value.value = "";
             login_verification_code_value.value = "";
-            $('.login_password>input')[0].setAttribute("required", "required");
-            $('.login_verification_code>input').removeAttr("required");
         };
         const verificationCodeType = () => {
+            $('.login_verification_code>input')[0].setAttribute("required", "required");
+            $('.login_password>input').removeAttr("required");
             $('.login_password').hide();
             $('.login_verification_code_module').show();
             $('.account_type').css("border-bottom", "none");
@@ -83,8 +85,6 @@ export default {
             login_phone_number_value.value = "";
             login_password_value.value = "";
             login_verification_code_value.value = "";
-            $('.login_verification_code>input')[0].setAttribute("required", "required");
-            $('.login_password>input').removeAttr("required");
         };
         const login = () => {
             console.log(login_phone_number_value.value, login_password_value.value, login_verification_code_value.value);
@@ -93,11 +93,13 @@ export default {
         const getVerificationCode = () => {
             let tm = 60;
             $('.login_get_verification_code_btn').attr("disabled", true);
+            $('.login_get_verification_code_btn').css("color", "grey");
             datab.data.get_verification_code_text = "60s后重试";
             let countDown = setInterval(() => {
                 if (tm <= 0) {
                     datab.data.get_verification_code_text = "获取验证码";
                     $('.login_get_verification_code_btn').attr("disabled", false);
+                    $('.login_get_verification_code_btn').css("color", "white");
                     clearInterval(countDown);
                 } else {
                     tm -- ;
@@ -108,10 +110,16 @@ export default {
         const forgetPassword = () => {
             $('.login_form').hide();
             $('.forget_password_form').show();
+            login_phone_number_value.value = "";
+            login_password_value.value = "";
+            login_verification_code_value.value = "";
         };
         const register = () => {
             $('.login_form').hide();
             $(".register_form").show();
+            login_phone_number_value.value = "";
+            login_password_value.value = "";
+            login_verification_code_value.value = "";
         };
         const qqLogin = () => {
             router.push({name: 'home'});

@@ -52,10 +52,12 @@ export default {
         const getVerificationCode = () => {
             let tm = 60;
             $('.register_get_verification_code_btn').attr("disabled", true);
+            $('.register_get_verification_code_btn').css("color", "grey");
             datab.data.get_verification_code_text = "60s后重试";
             let countDown = setInterval(() => {
                 if (tm <= 0) {
                     datab.data.get_verification_code_text = "获取验证码";
+                    $('.register_get_verification_code_btn').css("color", "white");
                     $('.register_get_verification_code_btn').attr("disabled", false);
                     clearInterval(countDown);
                 } else {
@@ -73,6 +75,10 @@ export default {
         const returnLogin = () => {
             $('.register_form').hide();
             $('.login_form').show();
+            register_phone_number_value.value = "";
+            register_password_value.value = "";
+            register_password_confirm_value.value = "";
+            register_verification_code_value.value = "";
         }
         return {
             getVerificationCode,

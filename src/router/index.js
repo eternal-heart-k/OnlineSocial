@@ -4,12 +4,12 @@ import LoginView from '../views/LoginView';
 
 const routes = [
     {
-        path: '/home',
+        path: '/',
         name: 'home',
         component: HomeView
     },
     {
-        path: '/',
+        path: '/login',
         name: 'login',
         component: LoginView
     },

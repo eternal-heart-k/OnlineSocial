@@ -2,8 +2,8 @@
     <div class="login_module">
         <div class="login_content">
             <div class="login_head">
-                <button class="btn login_close">X</button>
-                <span class="login_title">Online Social</span>
+                <button class="btn login_close" @click="closeLoginModule">X</button>
+                <span class="login_title">在线社交平台</span>
             </div>
             <LoginForm />
             <ForgetPasswordForm />
@@ -32,8 +32,12 @@ export default {
             $('.register_form').hide();
             $('.login_verification_code>input').removeAttr("required");
         };
+        const closeLoginModule = () => {
+            $('.login_module').hide();
+        };
         return {
             hideSth,
+            closeLoginModule,
         }
     },
     mounted() {
@@ -127,7 +131,7 @@ export default {
     background: #1d2b3a;
     position: absolute;
     top: 50%;
-    left: 20%;
+    left: 50%;
     transform: translate(-50%,-50%);
     width: 25%;
     height: 50%;
@@ -148,7 +152,11 @@ export default {
 }
 .login_close
 {
+    background-color: transparent;
+    border-color: transparent;
+    color: #CCCCCC;
     float: right;
+    font-size: large;
 }
 .login_title
 {

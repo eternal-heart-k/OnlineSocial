@@ -22,7 +22,7 @@ const ModuleLogin = {
                     data.error();
                 }
             });
-        }
+        },
     },
     modules: {
     }

@@ -47,10 +47,12 @@ export default {
         const getVerificationCode = () => {
             let tm = 60;
             $('.forget_password_get_verification_code_btn').attr("disabled", true);
+            $('.forget_password_get_verification_code_btn').css("color", "grey");
             datab.data.get_verification_code_text = "60s后重试";
             let countDown = setInterval(() => {
                 if (tm <= 0) {
                     datab.data.get_verification_code_text = "获取验证码";
+                    $('.forget_password_get_verification_code_btn').css("color", "white");
                     $('.forget_password_get_verification_code_btn').attr("disabled", false);
                     clearInterval(countDown);
                 } else {
@@ -67,6 +69,9 @@ export default {
         const returnLogin = () => {
             $('.forget_password_form').hide();
             $('.login_form').show();
+            forget_password_phone_number_value.value = "";
+            forget_password_new_password_value.value = "";
+            forget_password_verification_code_value.value = "";
         }
         return {
             getVerificationCode,
