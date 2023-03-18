@@ -122,6 +122,7 @@ export default {
             login_verification_code_value.value = "";
         };
         const qqLogin = () => {
+            $('.login_module').hide();
             router.push({name: 'home'});
         };
         return {

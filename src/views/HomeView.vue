@@ -1,32 +1,35 @@
 <template>
-  <h1>Home Page</h1>
-  <button @click="login">登录</button>
-  <LoginView />
+  <el-container>
+    <el-header class="header">
+      <HomeHeader />
+    </el-header>
+    <el-main>
+      <HotMain />
+    </el-main>
+  </el-container>
 </template>
 
 <script>
-import LoginView from '@/views/LoginView.vue';
-import $ from 'jquery';
+import HomeHeader from '@/components/HomeHeader.vue';
+import HotMain from '@/components/HotMain.vue';
 
 export default {
   name: 'HomeView',
   mounted() {
-    $('.login_module').hide();
-    console.log("hide");
+    
   },
   setup() {
-    const login = () => {
-      $('.login_module').show();
-    };
-    return {
-      login,
-    }
+    
   },
   components: {
-    LoginView
+    HomeHeader,
+    HotMain,
   }
 }
 </script>
 
 <style scoped>
+.header {
+  box-shadow: 0px 4px 8px rgba(0,0,0,.1);
+}
 </style>

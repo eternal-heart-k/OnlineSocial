@@ -1,0 +1,120 @@
+<template>
+  <el-row class="all-in">
+    <el-col :span="6">
+      <div class="center left">
+        <el-input class="serch-input" placeholder="搜索动态或用户" v-model="searchContent" @keyup.enter="Search" />
+      </div>
+    </el-col>
+    <el-col :span="12">
+      <div class="center">
+        <div class="box center">
+          <el-link type="primary" :underline="false" target="_blank" @click="ShowHotPost">热门</el-link>
+        </div>
+        <div class="box center">
+          <el-link type="primary" :underline="false" target="_blank" @click="ShowFollowPost">关注</el-link>
+        </div>
+        <div class="box center">
+          <el-icon class="btn" :size="25" @click="ShowMessage"><Message /></el-icon>
+        </div>
+        <div class="box center">
+          <el-avatar class="btn" :size="35" :src="avatarUrl" @click="ShowMyselfProfile"/>
+        </div>
+      </div>
+    </el-col>
+    <el-col :span="6">
+      <div class="center">
+        <div class="box center">
+          <el-icon class="btn" :size="25" @click="ShowEditPost"><Edit /></el-icon>
+        </div>
+        <div class="box center">
+          <el-icon class="btn" :size="25" @click="ShowEditFeedback"><Promotion /></el-icon>
+        </div>
+        <div v-if="userStatus == 1" class="box center">
+          <el-link type="primary" :underline="false" target="_blank" @click="LogOut">登出</el-link>
+        </div>
+        <div v-if="userStatus == 0" class="box center">
+          <el-link type="primary" :underline="false" target="_blank" @click="LogIn">登录</el-link>
+        </div>
+      </div>
+    </el-col>
+  </el-row>
+</template>
+
+<script>
+import { Message, Edit, Promotion } from "@element-plus/icons";
+
+export default {
+  name: "HomeHeader",
+  data() {
+    let avatarUrl = "https://bubble29.oss-cn-shanghai.aliyuncs.com/onlinesocial/23-02-21/boy.jpg"; // 头像连接
+    let userStatus = 1; // 用户登录状态
+    let searchContent = ""; // 搜索框输入内容
+    return {
+      avatarUrl,
+      userStatus,
+      searchContent
+    }
+  },
+  methods: {
+    Search() {
+      if (this.searchContent === "") {
+        return;
+      }
+      alert(this.searchContent);
+    },
+    ShowHotPost() {
+      alert("热门动态");
+    },
+    ShowFollowPost() {
+      alert("关注人动态");
+    },
+    ShowMessage() {
+      alert("消息来了");
+    },
+    ShowMyselfProfile() {
+      alert("个人空间");
+    },
+    ShowEditPost() {
+      alert("编辑动态");
+    },
+    ShowEditFeedback() {
+      alert("用户反馈");
+    },
+    LogOut() {
+      this.userStatus = 0;
+    },
+    LogIn() {
+      this.userStatus = 1;
+    }
+  },
+  components: {
+    Message,
+    Edit,
+    Promotion,
+  }
+}
+</script>
+
+<style scoped>
+.all-in {
+  width: 100%;
+  height: 100%;
+}
+
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.serch-input {
+  width: 70%;
+}
+
+.box {
+  width: 15%;
+  height: 100%;
+}
+</style>
