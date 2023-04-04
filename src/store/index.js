@@ -1,8 +1,9 @@
 import { createStore } from 'vuex'
-import ModuleLogin from './login'
+import ModuleUser from './user';
 
 export default createStore({
   state: {
+    urlPre: "https://localhost:7030", // "https://kanghui29.cn"
   },
   getters: {
   },
@@ -11,6 +12,6 @@ export default createStore({
   actions: {
   },
   modules: {
-    login: ModuleLogin,
+    user: ModuleUser,
   }
 })

@@ -29,10 +29,10 @@
         <div class="box center">
           <el-icon class="btn" :size="25" @click="ShowEditFeedback"><Promotion /></el-icon>
         </div>
-        <div v-if="userStatus == 1" class="box center">
+        <div v-if="isLogin" class="box center">
           <el-link type="primary" :underline="false" target="_blank" @click="LogOut">登出</el-link>
         </div>
-        <div v-if="userStatus == 0" class="box center">
+        <div v-if="!isLogin" class="box center">
           <el-link type="primary" :underline="false" target="_blank" @click="LogIn">登录</el-link>
         </div>
       </div>
@@ -42,49 +42,60 @@
 
 <script>
 import { Message, Edit, Promotion } from "@element-plus/icons";
+import $ from 'jquery';
+import { ref, computed } from 'vue';
+import { useStore } from 'vuex';
 
 export default {
   name: "HomeHeader",
-  data() {
-    let avatarUrl = "https://bubble29.oss-cn-shanghai.aliyuncs.com/onlinesocial/23-02-21/boy.jpg"; // 头像连接
-    let userStatus = 1; // 用户登录状态
-    let searchContent = ""; // 搜索框输入内容
-    return {
-      avatarUrl,
-      userStatus,
-      searchContent
-    }
-  },
-  methods: {
-    Search() {
-      if (this.searchContent === "") {
+  setup() {
+    const store = useStore();
+    let searchContent = ref('');
+    let avatarUrl = computed(() => store.state.user.avatarUrl);
+    let isLogin = computed(() => store.state.user.isLogin);
+    const Search = () => {
+      if (searchContent.value == "") {
         return;
       }
-      alert(this.searchContent);
-    },
-    ShowHotPost() {
+      alert(searchContent.value);
+    };
+    const ShowHotPost = () => {
       alert("热门动态");
-    },
-    ShowFollowPost() {
+    };
+    const ShowFollowPost = () => {
       alert("关注人动态");
-    },
-    ShowMessage() {
+    };
+    const ShowMessage = () => {
       alert("消息来了");
-    },
-    ShowMyselfProfile() {
+    };
+    const ShowMyselfProfile = () => {
       alert("个人空间");
-    },
-    ShowEditPost() {
+    };
+    const ShowEditPost = () => {
       alert("编辑动态");
-    },
-    ShowEditFeedback() {
+    };
+    const ShowEditFeedback = () => {
       alert("用户反馈");
-    },
-    LogOut() {
-      this.userStatus = 0;
-    },
-    LogIn() {
-      this.userStatus = 1;
+    };
+    const LogOut = () => {
+      store.commit("logOut");
+    };
+    const LogIn = () => {
+      $('.login_module').show();
+    }
+    return {
+      Search,
+      ShowHotPost,
+      ShowFollowPost,
+      ShowMessage,
+      ShowMyselfProfile,
+      ShowEditPost,
+      ShowEditFeedback,
+      LogOut,
+      LogIn,
+      searchContent,
+      avatarUrl,
+      isLogin,
     }
   },
   components: {

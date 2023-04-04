@@ -5,7 +5,7 @@
                 <button class="btn login_close" @click="closeLoginModule">X</button>
                 <span class="login_title">在线社交平台</span>
             </div>
-            <LoginForm />
+            <LoginForm ref="loginForm" />
             <ForgetPasswordForm />
             <RegisterForm />
         </div>
@@ -35,14 +35,18 @@ export default {
         const closeLoginModule = () => {
             $('.login_module').hide();
         };
+        const showLoginModule = () => {
+            $('.login_module').show();
+        };
         return {
             hideSth,
             closeLoginModule,
+            showLoginModule,
         }
     },
     mounted() {
         this.hideSth();
-    }
+    },
 }
 </script>
 
@@ -130,7 +134,7 @@ export default {
 {
     background: #1d2b3a;
     position: absolute;
-    top: 50%;
+    top: 45%;
     left: 50%;
     transform: translate(-50%,-50%);
     width: 25%;

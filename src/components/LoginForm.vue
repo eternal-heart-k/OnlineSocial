@@ -1,31 +1,31 @@
 <template>
-    <form class="login_form" @submit.prevent>
+    <form class="login_form" @submit.prevent novalidate>
         <div class="login_select">
             <a href="javascript:void(0)" class="login_select_type account_type" @click="accountType">密码登录</a>
             <a href="javascript:void(0)" class="login_select_type verification_code_type" @click="verificationCodeType">验证码登录</a>
         </div>
         <div class="login_body">
             <div class="inputBox login_phone_number">
-                <input v-model="login_phone_number_value" type="text" required="required">
+                <input v-model="login_phone_number" type="text" required="required">
                 <span>手机号</span>
             </div>
             <div class="inputBox login_password">
-                <input v-model="login_password_value" type="password" required="required">
+                <input v-model="login_password" type="password" required="required">
                 <span>密码</span>
             </div>
             <div class="login_verification_code_module">
                 <div class="inputBox login_verification_code">
-                    <input v-model="login_verification_code_value" type="text" required="required">
+                    <input v-model="login_verification_code" type="text" required="required">
                     <span>验证码</span>
                 </div>
                 <div class="inputBox login_get_verification_code">
-                    <input type="button" v-model="get_verification_code_text" class="btn login_get_verification_code_btn" @click="getVerificationCode">
+                    <input type="button" :value="get_verification_code_text" class="btn login_get_verification_code_btn" @click="getVerificationCode">
                 </div>
             </div>
-            <div class="errormsg login_errormsg">账号或密码错误</div>
+            <div class="errormsg login_errormsg">{{ error_message }}</div>
         </div>
         <div class="login_footer">
-            <button class="btn login_confirm_btn" @click="login">登录</button>
+            <button class="btn login_confirm_btn" @click="login">{{ login_text }}</button>
             <div class="forgetpassword_register">
                 <div class="btn btn_link forget_password">
                     <a class="forget_password_btn" @click="forgetPassword">忘记密码</a>
@@ -36,7 +36,7 @@
             </div>
             <div class="login_quickly">
                 <div>
-                    <img class="btn login_qq_image" src="../assets/qq.jpg" alt="QQ图标" @click="qqLogin">
+                    <img class="btn login_qq_image" src="../assets/qq.jpg" alt="QQ图标" @click="loginWithQQ">
                 </div>
                 <div class="login_quickly_title">
                     <a class="btn_link">&nbsp;&nbsp;快速登录</a>
@@ -49,93 +49,137 @@
 <script>
 import $ from 'jquery';
 import { ref } from 'vue';
-import router from '@/router/index';
-import { getCurrentInstance } from 'vue';
+import { useStore } from 'vuex';
 
 export default {
     name: "LoginForm",
-    data() {
-        return {
-            get_verification_code_text: "获取验证码",
-        }
-    },
     setup() {
-        const datab = getCurrentInstance();
-        let login_phone_number_value = ref('');
-        let login_password_value = ref('');
-        let login_verification_code_value = ref('');
+        const store = useStore();
+        let login_user_type = ref(1);
+        let login_phone_number = ref('');
+        let login_password = ref('');
+        let login_verification_code = ref('');
+        let get_verification_code_text = ref('获取验证码');
+        let login_text = ref('登录');
+        let error_message = ref('');
+        const urlPre = store.state.urlPre;
         const accountType = () => {
+            login_user_type.value = 1;
             $('.login_password>input')[0].setAttribute("required", "required");
             $('.login_verification_code>input').removeAttr("required");
             $('.login_verification_code_module').hide();
             $('.login_password').show();
             $('.verification_code_type').css("border-bottom", "none");
             $('.account_type').css("border-bottom", "3px solid #66afe9");
-            login_phone_number_value.value = "";
-            login_password_value.value = "";
-            login_verification_code_value.value = "";
+            login_phone_number.value = "";
+            login_password.value = "";
+            login_verification_code.value = "";
         };
         const verificationCodeType = () => {
+            login_user_type.value = 3;
             $('.login_verification_code>input')[0].setAttribute("required", "required");
             $('.login_password>input').removeAttr("required");
             $('.login_password').hide();
             $('.login_verification_code_module').show();
             $('.account_type').css("border-bottom", "none");
             $('.verification_code_type').css("border-bottom", "3px solid #66afe9");
-            login_phone_number_value.value = "";
-            login_password_value.value = "";
-            login_verification_code_value.value = "";
-        };
-        const login = () => {
-            console.log(login_phone_number_value.value, login_password_value.value, login_verification_code_value.value);
-            //router.push({name: 'home'});
+            login_phone_number.value = "";
+            login_password.value = "";
+            login_verification_code.value = "";
         };
         const getVerificationCode = () => {
             let tm = 60;
             $('.login_get_verification_code_btn').attr("disabled", true);
             $('.login_get_verification_code_btn').css("color", "grey");
-            datab.data.get_verification_code_text = "60s后重试";
+            get_verification_code_text.value = "60s后重试";
             let countDown = setInterval(() => {
                 if (tm <= 0) {
-                    datab.data.get_verification_code_text = "获取验证码";
+                    get_verification_code_text.value = "获取验证码";
                     $('.login_get_verification_code_btn').attr("disabled", false);
                     $('.login_get_verification_code_btn').css("color", "white");
                     clearInterval(countDown);
                 } else {
                     tm -- ;
-                    datab.data.get_verification_code_text = tm + "s后重试";
+                    get_verification_code_text.value = tm + "s后重试";
                 }
             }, 1000);
         };
         const forgetPassword = () => {
             $('.login_form').hide();
             $('.forget_password_form').show();
-            login_phone_number_value.value = "";
-            login_password_value.value = "";
-            login_verification_code_value.value = "";
+            login_phone_number.value = "";
+            login_password.value = "";
+            login_verification_code.value = "";
         };
         const register = () => {
             $('.login_form').hide();
             $(".register_form").show();
-            login_phone_number_value.value = "";
-            login_password_value.value = "";
-            login_verification_code_value.value = "";
+            login_phone_number.value = "";
+            login_password.value = "";
+            login_verification_code.value = "";
         };
-        const qqLogin = () => {
-            $('.login_module').hide();
-            router.push({name: 'home'});
+        const login = () => {
+            error_message.value = "";
+            login_text.value = "登录中...";
+            if (login_user_type.value == 1) {
+                loginWithPassword();
+            } else if (login_user_type.value == 3) {
+                loginWithVerificationCode();
+            }
+        };
+        const loginWithPassword = () => {
+            if (login_phone_number.value == "") {
+                $(".login_phone_number input").focus();
+            } else if (login_password.value == "") {
+                $(".login_password input").focus();
+            }
+            store.dispatch("loginWithPassword", {
+                urlPre: urlPre,
+                param: {
+                    PhoneNumber: login_phone_number.value,
+                    Password: login_password.value,
+                    Type: login_user_type.value
+                },
+                success() {
+                    $(".login_module").hide();
+                    login_text.value = "登录";
+                },
+                error(message) {
+                    error_message.value = message;
+                    login_text.value = "登录";
+                },
+            });
+        };
+        const loginWithQQ = () => {
+            error_message.value = "";
+            login_user_type.value = 2;
+            alert("QQ快速登录");
+        };
+        const loginWithVerificationCode = () => {
+            if (login_phone_number.value == "") {
+                $(".login_phone_number input").focus();
+            } else if (login_verification_code.value == "") {
+                $(".login_verification_code input").focus();
+            }
+            alert("验证码登录");
         };
         return {
             accountType,
             verificationCodeType,
-            login,
             getVerificationCode,
             forgetPassword,
             register,
-            qqLogin,
-            login_phone_number_value,
-            login_password_value,
-            login_verification_code_value,
+            login,
+            loginWithPassword,
+            loginWithQQ,
+            loginWithVerificationCode,
+            login_user_type,
+            login_phone_number,
+            login_password,
+            login_verification_code,
+            get_verification_code_text,
+            error_message,
+            login_text,
         }
     }
 }
