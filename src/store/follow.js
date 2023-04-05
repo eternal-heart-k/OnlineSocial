@@ -17,7 +17,6 @@ const ModuleFollow = {
     },
     actions: {
         getFollowCount(context) {
-            console.log(context, context.rootState.user.AccessToken);
             $.ajax({
                 url: context.rootState.urlPre + "/api/follow/count?userId=" + context.rootState.user.userId,
                 type: "get",

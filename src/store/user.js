@@ -6,6 +6,7 @@ const ModuleUser = {
         userId: "",
         userName: "",
         avatarUrl: "",
+        personalSignature: "",
         accessToken: "",
         refreshToken: "",
         isLogin: false,
@@ -17,6 +18,7 @@ const ModuleUser = {
             state.userId = user.UserId;
             state.userName = user.UserName;
             state.avatarUrl = user.AvatarUrl;
+            state.personalSignature = user.PersonalSignature;
             state.isLogin = user.IsLogin;
         },
         updateToken(state, token) {
