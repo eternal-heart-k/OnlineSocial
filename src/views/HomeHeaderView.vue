@@ -9,17 +9,17 @@
       <div class="center">
         <div class="box center">
           <router-link :to="{name: 'home' }">
-            <el-link class="no-select" type="primary" :underline="false" target="_blank">首页</el-link>
+            <el-link class="no-select btn" type="primary" :underline="false" target="_blank" :style="{ 'font-size': '17px' }">首页</el-link>
           </router-link>
         </div>
         <div class="box center">
           <router-link :to="{name: 'hot' }">
-            <el-link class="no-select" type="primary" :underline="false" target="_blank">热门</el-link>
+            <el-link class="no-select btn" type="primary" :underline="false" target="_blank" :style="{ 'font-size': '17px' }">热门</el-link>
           </router-link>
         </div>
         <div class="box center">
           <router-link :to="{name: 'myFollow' }">
-            <el-link class="no-select" type="primary" :underline="false" target="_blank">关注</el-link>
+            <el-link class="no-select btn" type="primary" :underline="false" target="_blank" :style="{ 'font-size': '17px' }">关注</el-link>
           </router-link>
         </div>
         <div class="box center">
@@ -27,7 +27,7 @@
         </div>
         <div class="box center">
           <router-link :to="{name: 'userProfile' }">
-            <el-avatar class="btn" :size="35" :src="avatarUrl"/>
+            <el-avatar class="btn" :size="35" :src="avatarUrl" @click="clickUserProfile"/>
           </router-link>
         </div>
       </div>
@@ -41,11 +41,11 @@
           <el-icon class="btn" :size="25" @click="ShowEditFeedback"><Promotion /></el-icon>
         </div>
         <div v-if="isLogin" class="box center">
-          <el-link class="no-select" type="primary" :underline="false" target="_blank" @click="LogOut">登出</el-link>
+          <el-link class="no-select btn" type="primary" :underline="false" target="_blank" @click="LogOut" :style="{ 'font-size': '17px' }">登出</el-link>
         </div>
         <div v-if="!isLogin" class="box center">
           <router-link :to="{name: 'login' }">
-            <el-link class="no-select" type="primary" :underline="false" target="_blank">登录</el-link>
+            <el-link class="no-select btn" type="primary" :underline="false" target="_blank" :style="{ 'font-size': '17px' }">登录</el-link>
           </router-link>
         </div>
       </div>
@@ -99,12 +99,17 @@ export default {
         // 点击取消按钮后执行的操作
       });
     };
+    const clickUserProfile = () => {
+      store.dispatch("getFollowCount");
+      store.dispatch("getFollowedCount");
+    };
     return {
       Search,
       messageShow,
       ShowEditPost,
       ShowEditFeedback,
       LogOut,
+      clickUserProfile,
       searchContent,
       avatarUrl,
       isLogin,

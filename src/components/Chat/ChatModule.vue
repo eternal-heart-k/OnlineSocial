@@ -21,12 +21,6 @@ export default {
         chatInputValue: []
         }
     },
-    mounted() {
-        // setTimeout(() => {
-        //   this.chatInputFocus()
-        //   this.chatInputClean()
-        // }, 3000)
-    },
     methods: {
         // 获取焦点
         chatInputFocus() {

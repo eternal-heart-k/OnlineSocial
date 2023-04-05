@@ -94,7 +94,7 @@ const ModuleUser = {
         },
         loginWithPassword(context, data) {
             $.ajax ({
-                url: data.urlPre + "/api/user/login",
+                url: context.rootState.urlPre + "/api/user/login",
                 type: "post",
                 data: JSON.stringify(data.param),
                 contentType: "application/json",

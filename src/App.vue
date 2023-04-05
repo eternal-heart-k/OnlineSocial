@@ -1,8 +1,10 @@
 <template>
-  <el-header class="header">
-    <HomeHeaderView />
-  </el-header>
-  <router-view :key="$route.fullPath" />
+  <div class="web-module">
+    <el-header class="header">
+      <HomeHeaderView />
+    </el-header>
+    <router-view :key="$route.fullPath" />
+  </div>
 </template>
 
 <script>
@@ -40,7 +42,11 @@ export default {
 </script>
 
 <style scoped>
+.web-module {
+  background-color: #F7F8FA;
+}
 .header {
-  box-shadow: 0px 4px 8px rgba(0,0,0,.1);
+  box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
+  background-color: #FFFFFF;
 }
 </style>

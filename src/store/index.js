@@ -1,5 +1,6 @@
 import { createStore } from 'vuex'
 import ModuleUser from './user';
+import ModuleFollow from './follow';
 
 export default createStore({
   state: {
@@ -14,5 +15,6 @@ export default createStore({
   },
   modules: {
     user: ModuleUser,
+    follow: ModuleFollow,
   }
 })

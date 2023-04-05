@@ -76,7 +76,6 @@ export default {
         let get_verification_code_text = ref('获取验证码');
         let login_text = ref('登录');
         let error_message = ref('');
-        const urlPre = store.state.urlPre;
         const accountType = () => {
             login_user_type.value = 1;
             $('.login_password>input')[0].setAttribute("required", "required");
@@ -148,7 +147,6 @@ export default {
                 $(".login_password input").focus();
             }
             store.dispatch("loginWithPassword", {
-                urlPre: urlPre,
                 param: {
                     PhoneNumber: login_phone_number.value,
                     Password: login_password.value,
