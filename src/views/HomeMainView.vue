@@ -4,13 +4,13 @@
 </template>
 
 <script>
-import ChatModule from './Chat/ChatModule.vue';
+import ChatModule from '../components/Chat/ChatModule.vue';
 
 export default {
-    name: "HomeMain",
+    name: "HomeMainView",
     components: {
         ChatModule,
-    }
+    },
 }
 </script>
 
