@@ -8,6 +8,7 @@
 <script>
 import HomeHeaderView from './views/HomeHeaderView.vue';
 import { useStore } from 'vuex';
+import router from '@/router/index';
 
 export default {
   name: "App",
@@ -27,6 +28,7 @@ export default {
       store.dispatch("getUserInfoByUserId", {
         AccessToken: store.state.user.accessToken,
         success() {
+          router.push({name: "home"});
         },
         error(message) {
           alert(message);

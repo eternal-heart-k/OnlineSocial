@@ -50,9 +50,23 @@
 import $ from 'jquery';
 import { ref } from 'vue';
 import { useStore } from 'vuex';
+import router from '@/router/index';
 
 export default {
     name: "LoginForm",
+    methods: { 
+        changeAccountType() {
+            $('.login_password>input')[0].setAttribute("required", "required");
+            $('.login_verification_code>input').removeAttr("required");
+            $('.login_verification_code_module').hide();
+            $('.login_password').show();
+            $('.verification_code_type').css("border-bottom", "none");
+            $('.account_type').css("border-bottom", "3px solid #66afe9");
+        },
+    },
+    mounted() {
+        this.changeAccountType();
+    },
     setup() {
         const store = useStore();
         let login_user_type = ref(1);
@@ -142,8 +156,8 @@ export default {
                 },
                 success() {
                     error_message.value = "";
-                    $(".login_module").hide();
                     login_text.value = "登录";
+                    router.push({name: "home"});
                 },
                 error(message) {
                     error_message.value = message;
@@ -154,15 +168,24 @@ export default {
         const loginWithQQ = () => {
             error_message.value = "";
             login_user_type.value = 2;
-            alert("QQ快速登录");
+
+            alert("正在加速开发中...");
+            login_text.value = "登录";
+            return;
+
+            //alert("QQ快速登录");a
         };
         const loginWithVerificationCode = () => {
-            if (login_phone_number.value == "") {
-                $(".login_phone_number input").focus();
-            } else if (login_verification_code.value == "") {
-                $(".login_verification_code input").focus();
-            }
-            alert("验证码登录");
+            alert("正在加速开发中...");
+            login_text.value = "登录";
+            return;
+
+            // if (login_phone_number.value == "") {
+            //     $(".login_phone_number input").focus();
+            // } else if (login_verification_code.value == "") {
+            //     $(".login_verification_code input").focus();
+            // }
+            // alert("验证码登录");
         };
         return {
             accountType,
