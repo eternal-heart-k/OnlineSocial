@@ -23,11 +23,14 @@ export default {
     const store = useStore();
     let accessToken = localStorage.getItem("access_token");
     let refreshToken = localStorage.getItem("refresh_token");
-    let urlPre = store.state.urlPre;
     if (refreshToken != undefined && refreshToken != "" && accessToken != undefined && accessToken != "") {
-      store.dispatch("refreshAccessToken", urlPre);
+      store.dispatch("refreshAccessToken", {
+        First: true,
+        AccessToken: accessToken,
+        RefreshToken: refreshToken
+      });
       store.dispatch("getUserInfoByUserId", {
-        urlPre,
+        AccessToken: store.state.user.accessToken,
         success() {
           console.log(store.state.user);
         },

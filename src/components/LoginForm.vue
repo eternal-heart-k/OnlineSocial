@@ -141,6 +141,7 @@ export default {
                     Type: login_user_type.value
                 },
                 success() {
+                    error_message.value = "";
                     $(".login_module").hide();
                     login_text.value = "登录";
                 },

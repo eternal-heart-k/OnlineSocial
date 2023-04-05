@@ -22,9 +22,8 @@ const ModuleUser = {
         updateToken(state, token) {
             state.accessToken = token.AccessToken;
             state.refreshToken = token.RefreshToken;
-        },
-        updateAccessToken(state, accessToken) {
-            state.accessToken = accessToken;
+            localStorage.setItem("access_token", token.AccessToken);
+            localStorage.setItem("refresh_token", token.RefreshToken);
         },
         logOut(state) {
             state.userId = "";
@@ -39,10 +38,13 @@ const ModuleUser = {
     },
     actions: {
         getUserInfoByUserId(context, data) {
-            let claims = jwt_decode(context.state.accessToken);
+            let claims = jwt_decode(data.AccessToken);
             $.ajax({
-                url: data.urlPre + "/api/user/userid?userId=" + claims.id,
+                url: context.rootState.urlPre + "/api/user/userid?userId=" + claims.id,
                 type: "get",
+                headers: {
+                    'Authorization': "Bearer " + data.AccessToken,
+                },
                 success(resp) {
                     if (resp.IsSuccess) {
                         context.commit("updateUser", {
@@ -54,33 +56,41 @@ const ModuleUser = {
                     } else {
                         data.error(resp.Message);
                     }
+                },
+                error(resp) {
+                    if (resp.status == '401') {
+                        alert(context.rootState.unAuthorize);
+                    }
                 }
             });
         },
         refreshAccessToken(context, data) {
-            context.commit("updateToken", {
-                AccessToken: localStorage.getItem("access_token"),
-                RefreshToken: localStorage.getItem("refresh_token"),
-            });
-            setInterval(() => {
-                $.ajax({
-                    url: data.urlPre + "/api/jwt/refresh",
-                    type: "post",
-                    data: JSON.stringify({
-                        AccessToken: context.state.AccessToken, 
-                        RefreshToken: context.state.RefreshToken
-                    }),
-                    contentType: "application/json",
-                    success(resp) {
-                        if (resp.IsSuccess) {
-                            localStorage.setItem("access_token", resp.Result.AccessToken);
-                            context.commit("updateAccessToken", resp.Result.AccessToken);
-                        } else {
-                            alert(resp.Message);
-                        }
+            $.ajax({
+                url: context.rootState.urlPre + "/api/jwt/refresh",
+                type: "post",
+                data: JSON.stringify({
+                    AccessToken: data.AccessToken, 
+                    RefreshToken: data.RefreshToken
+                }),
+                async: data.First ? false : true,
+                contentType: "application/json",
+                success(resp) {
+                    if (resp.IsSuccess) {
+                        context.commit("updateToken", resp.Result);
+                    } else {
+                        alert(resp.Message);
                     }
-                });
-            }, 4.5* 60 * 1000);
+                }
+            });
+        },
+        refreshAccessTokenInterval(context, data) {
+            if (data.First) {
+                context.dispatch("refreshAccessToken", data);
+            }
+            setInterval(() => context.dispatch("refreshAccessToken", {
+                AccessToken: context.state.accessToken,
+                RefreshToken: context.state.refreshToken
+            }), 4.5 * 60 * 1000);
         },
         loginWithPassword(context, data) {
             $.ajax ({
@@ -95,9 +105,12 @@ const ModuleUser = {
                         context.commit("updateToken", resp.Result);
                         
                         // 获取用户信息
-                        context.dispatch("getUserInfoByUserId", data);
+                        context.dispatch("getUserInfoByUserId", {
+                            ...data,
+                            AccessToken: context.state.accessToken
+                        });
                         // 刷新accessToken
-                        context.dispatch("refreshAccessToken", data.urlPre);
+                        context.dispatch("refreshAccessTokenInterval", {First: false});
                     } else {
                         data.error(resp.Message);
                     }
