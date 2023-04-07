@@ -45,7 +45,7 @@
         </div>
         <div v-if="!isLogin" class="box center">
           <router-link :to="{name: 'login' }">
-            <el-link class="no-select btn" type="primary" :underline="false" target="_blank" :style="{ 'font-size': '17px' }">登录</el-link>
+            <el-link class="no-select btn" type="primary" :underline="false" target="_blank" :style="{ 'font-size': '17px' }" @click="loginShow">登录</el-link>
           </router-link>
         </div>
       </div>
@@ -59,6 +59,7 @@ import { ref, computed } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from "vue-router";
 import { ElMessageBox } from 'element-plus';
+import $ from 'jquery';
 
 export default {
   name: "HomeHeaderView",
@@ -94,7 +95,9 @@ export default {
         }
       }).then(() => {
         // 点击确定按钮后执行的操作
-        store.commit("logOut");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        location.reload();
       }).catch(() => {
         // 点击取消按钮后执行的操作
       });
@@ -103,6 +106,9 @@ export default {
       store.dispatch("getFollowCount");
       store.dispatch("getFollowedCount");
     };
+    const loginShow = () => {
+      $(".login_module").show();
+    };
     return {
       Search,
       messageShow,
@@ -110,6 +116,7 @@ export default {
       ShowEditFeedback,
       LogOut,
       clickUserProfile,
+      loginShow,
       searchContent,
       avatarUrl,
       isLogin,

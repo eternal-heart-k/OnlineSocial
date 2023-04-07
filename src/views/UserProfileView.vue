@@ -15,17 +15,26 @@
             <el-col :span="6"></el-col>
         </el-row>
     </div>
+    <UpdateUserInfoForm />
+    <UpdatePasswordForm />
 </template>
 
 <script>
 import MyProfile from '@/components/MyProfile.vue';
 import MyPostInfos from '@/components/MyPostInfos.vue';
+import UpdatePasswordForm from '@/components/UpdatePasswordForm.vue';
+import UpdateUserInfoForm from '@/components/UpdateUserInfoForm.vue';
 
 export default {
     name: "UserProfileView",
     components: {
         MyProfile,
         MyPostInfos,
+        UpdatePasswordForm,
+        UpdateUserInfoForm,
+    },
+    setup() {
+        
     }
 }
 </script>

@@ -63,6 +63,7 @@ export default {
         };
         const forgetPasswordConfirm = () => {
             console.log(forget_password_phone_number_value.value, forget_password_new_password_value.value, forget_password_verification_code_value.value);
+            alert("正在加速开发中...");
             // $('.forget_password_form').hide();
             // $('.login_form').show();
         };

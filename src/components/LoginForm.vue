@@ -51,6 +51,7 @@ import $ from 'jquery';
 import { ref } from 'vue';
 import { useStore } from 'vuex';
 import router from '@/router/index';
+import md5 from 'js-md5';
 
 export default {
     name: "LoginForm",
@@ -149,7 +150,7 @@ export default {
             store.dispatch("loginWithPassword", {
                 param: {
                     PhoneNumber: login_phone_number.value,
-                    Password: login_password.value,
+                    Password: login_password.value == "" ? "" : md5(login_password.value),
                     Type: login_user_type.value
                 },
                 success() {

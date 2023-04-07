@@ -28,7 +28,6 @@ export default {
         RefreshToken: refreshToken
       });
       store.dispatch("getUserInfoByUserId", {
-        AccessToken: store.state.user.accessToken,
         success() {
           router.push({name: "home"});
         },

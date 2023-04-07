@@ -68,6 +68,7 @@ export default {
         }
         const registerConfirm = () => {
             console.log(register_phone_number_value.value, register_password_value.value, register_password_confirm_value.value, register_verification_code_value.value);
+            alert("加速开发中...");
             // 注册成功
             // $('.register_form').hide();
             // $('.login_form').show();

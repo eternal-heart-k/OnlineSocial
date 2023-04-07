@@ -7,6 +7,8 @@ const ModuleUser = {
         userName: "",
         avatarUrl: "",
         personalSignature: "",
+        gender: "",
+        birthday: "",
         accessToken: "",
         refreshToken: "",
         isLogin: false,
@@ -19,6 +21,8 @@ const ModuleUser = {
             state.userName = user.UserName;
             state.avatarUrl = user.AvatarUrl;
             state.personalSignature = user.PersonalSignature;
+            state.gender = user.Gender == 1 ? "男" : "女";
+            state.birthday = user.Birthday;
             state.isLogin = user.IsLogin;
         },
         updateToken(state, token) {
@@ -27,25 +31,15 @@ const ModuleUser = {
             localStorage.setItem("access_token", token.AccessToken);
             localStorage.setItem("refresh_token", token.RefreshToken);
         },
-        logOut(state) {
-            state.userId = "";
-            state.userName = "";
-            state.avatarUrl = "";
-            state.accessToken = "";
-            state.refreshToken = "";
-            state.isLogin = false;
-            localStorage.removeItem("access_token");
-            localStorage.removeItem("refresh_token");
-        }
     },
     actions: {
         getUserInfoByUserId(context, data) {
-            let claims = jwt_decode(data.AccessToken);
+            let claims = jwt_decode(context.rootState.user.accessToken);
             $.ajax({
                 url: context.rootState.urlPre + "/api/user/userid?userId=" + claims.id,
                 type: "get",
                 headers: {
-                    'Authorization': "Bearer " + data.AccessToken,
+                    'Authorization': "Bearer " + context.rootState.user.accessToken,
                 },
                 success(resp) {
                     if (resp.IsSuccess) {
@@ -107,10 +101,7 @@ const ModuleUser = {
                         context.commit("updateToken", resp.Result);
                         
                         // 获取用户信息
-                        context.dispatch("getUserInfoByUserId", {
-                            ...data,
-                            AccessToken: context.state.accessToken
-                        });
+                        context.dispatch("getUserInfoByUserId", data);
                         // 刷新accessToken
                         context.dispatch("refreshAccessTokenInterval", {First: false});
                     } else {
