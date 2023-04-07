@@ -4,11 +4,11 @@
             <el-row>
                 <el-col :span="8" class="my-info-main-left my-image">
                     <el-upload 
+                        :disabled="!isLogin"
                         :show-file-list="false"
                         :http-request="updateAvatar"
                     >
-                        <el-avatar v-if="avatarUrl" class="my-avatar" shape="square" :size="100" :fit="fit" :src="avatarUrl"/>
-                        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                        <el-avatar class="my-avatar" shape="square" :size="100" :fit="fit" :src="avatarUrl"/>
                     </el-upload>
                 </el-col>
                 <el-col :span="16" class="user-info-main-right">
@@ -51,6 +51,12 @@ export default {
     setup() {
         const store = useStore();
         const fit = "cover";
+        let isLogin = computed({
+            get() {
+                return store.state.user.isLogin;
+            },
+            set() {}
+        });
         let avatarUrl = computed({
             get() {
                 return store.state.user.avatarUrl;
@@ -78,7 +84,7 @@ export default {
         let personalSignature = computed({
             get() {
                 if (store.state.user.personalSignature == null || store.state.user.personalSignature == "") {
-                    return "个性签名：该用户很懒，暂无个性签名";
+                    return "个性签名：" + store.state.user.personalSignature;
                 }
                 return "个性签名：" + store.state.user.personalSignature.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, '&nbsp;');
             },
@@ -103,17 +109,29 @@ export default {
             alert("粉丝信息");
         };
         const updateUserInfoFormShow = () => {
-            store.dispatch("updateUpdateUserInfoFormShow", {
-                Status: true
-            });
+            store.dispatch("beforeAction", {
+                func() {
+                    store.dispatch("updateUpdateUserInfoFormShow", {
+                        Status: true
+                    });
+                }
+            });            
         };
         const updatePasswordFormShow = () => {
-            store.dispatch("updateUpdatePasswordFormShow", {
-                Status: true
+            store.dispatch("beforeAction", {
+                func() {
+                    store.dispatch("updateUpdatePasswordFormShow", {
+                        Status: true
+                    });
+                }
             });
         };
         const updateAvatar = (ops) => {
-            store.dispatch("updateAvatar", ops.file);
+            store.dispatch("beforeAction", {
+                func() {
+                    store.dispatch("updateAvatar", ops.file);
+                }
+            });
         };
         return {
             fit,
@@ -124,6 +142,7 @@ export default {
             personalSignature,
             gender,
             birthday,
+            isLogin,
             followUserInfoShow,
             followedUserInfoShow,
             updateUserInfoFormShow,

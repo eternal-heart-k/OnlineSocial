@@ -13,6 +13,13 @@ export default createStore({
   mutations: {
   },
   actions: {
+    beforeAction(context, data) {
+      if (!context.rootState.user.isLogin) {
+        alert("暂未登录，请先登录");
+        return;
+      }
+      data.func();
+    }
   },
   modules: {
     user: ModuleUser,

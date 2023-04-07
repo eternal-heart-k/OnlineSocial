@@ -108,6 +108,7 @@ export default {
     };
     const loginShow = () => {
       $(".login_module").show();
+      alert("因网站刚开发中，短信验证码以及QQ快速登录功能暂未实现，需要登录进去可以使用测试账号test|123456");
     };
     return {
       Search,
