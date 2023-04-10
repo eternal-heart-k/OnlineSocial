@@ -24,20 +24,28 @@ export default {
     const store = useStore();
 
     let geturl = window.location.href;
-    let getqyinfo = geturl.split('?')[1];
-    let getqys = new URLSearchParams('?' + getqyinfo);
-    let accessTokenOfUrl = getqys.get('accsss_token');
-    let refreshTokenOfUrl = getqys.get('refresh_token');
-    if (accessTokenOfUrl != undefined && accessTokenOfUrl != "" && refreshTokenOfUrl != undefined && refreshTokenOfUrl != "") {
-      store.dispatch("loginWithQQ", {
-        AccessToken: accessTokenOfUrl,
-        RefreshToken: refreshTokenOfUrl,
-        success() {
-          router.push({name: "home"});
-        },
-      });
+    if (geturl.indexOf("?") != -1) {
+      let getqyinfo = geturl.split('?')[1];
+      if (getqyinfo.indexOf("&") != 1) {
+        let getqys = getqyinfo.split('&');
+        if (getqys.length >= 2) {
+          if (getqys[0].split('=')[0] == "access_token" && getqys[1].split('=')[0] == "refresh_token") {
+            let accessTokenOfUrl =  getqys[0].split('=')[1];
+            let refreshTokenOfUrl = getqys[1].split('=')[1];
+            if (accessTokenOfUrl != undefined && accessTokenOfUrl != "" && refreshTokenOfUrl != undefined && refreshTokenOfUrl != "") {
+              store.dispatch("loginWithQQ", {
+                AccessToken: accessTokenOfUrl,
+                RefreshToken: refreshTokenOfUrl,
+                success() {
+                  router.push({name: "home", path: "/onlinesocial"});
+                },
+              });
+              return;
+            }
+          }
+        } 
+      }
     }
-
     let accessToken = localStorage.getItem("access_token");
     let refreshToken = localStorage.getItem("refresh_token");
     if (refreshToken != undefined && refreshToken != "" && accessToken != undefined && accessToken != "") {
