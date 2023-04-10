@@ -90,7 +90,7 @@ const ModuleUser = {
         },
         loginWithPassword(context, data) {
             $.ajax ({
-                url: context.rootState.urlPre + "/api/user/login",
+                url: context.rootState.urlPre + "/api/user/login/phonenumber",
                 type: "post",
                 data: JSON.stringify(data.param),
                 contentType: "application/json",
@@ -104,6 +104,23 @@ const ModuleUser = {
                         context.dispatch("getUserInfoByUserId", data);
                         // 刷新accessToken
                         context.dispatch("refreshAccessTokenInterval", {First: false});
+                    } else {
+                        data.error(resp.Message);
+                    }
+                },
+                error() {
+                    data.error("");
+                }
+            });
+        },
+        getLoginWithQQUrl(context, data) {
+            $.ajax ({
+                url: context.rootState.urlPre + "/api/qq/auth",
+                type: "get",
+                contentType: "application/json",
+                success(resp) {
+                    if (resp.IsSuccess) {
+                        window.location.href = resp.Result;
                     } else {
                         data.error(resp.Message);
                     }

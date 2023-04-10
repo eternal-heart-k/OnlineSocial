@@ -2,10 +2,11 @@ import { createStore } from 'vuex'
 import ModuleUser from './user';
 import ModuleFollow from './follow';
 import ModuleProfile from './profile';
+import ModulePost from './post';
 
 export default createStore({
   state: {
-    urlPre: "https://localhost:7030", // "https://kanghui29.cn"
+    urlPre: "https://localhost:7030", // "https://kanghui29.cn" "https://localhost:7030"
     unAuthorize: "身份认证已过期，请重新登录",
   },
   getters: {
@@ -25,5 +26,6 @@ export default createStore({
     user: ModuleUser,
     follow: ModuleFollow,
     profile: ModuleProfile,
+    post: ModulePost,
   }
 })

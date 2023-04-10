@@ -5,17 +5,20 @@
     </el-header>
     <router-view :key="$route.fullPath" />
   </div>
+  <PostEdit />
 </template>
 
 <script>
 import HomeHeaderView from './views/HomeHeaderView.vue';
 import { useStore } from 'vuex';
 import router from '@/router/index';
+import PostEdit from './components/post/PostEdit.vue';
 
 export default {
   name: "App",
   components: {
     HomeHeaderView,
+    PostEdit,
   },
   mounted() {
     const store = useStore();

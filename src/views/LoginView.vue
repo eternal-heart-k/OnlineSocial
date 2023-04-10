@@ -1,5 +1,5 @@
 <template>
-    <div class="login_module">
+    <div class="login_module" >
         <div class="login_content">
             <div class="login_head">
                 <button class="btn login_close" @click="closeLoginModule">X</button>

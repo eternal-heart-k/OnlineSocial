@@ -2,7 +2,7 @@
   <el-row class="all-in">
     <el-col :span="6">
       <div class="center left">
-        <el-input class="serch-input" placeholder="搜索动态或用户" v-model="searchContent" @keyup.enter="Search" />
+        <el-input class="serch-input" placeholder="搜索动态或用户" v-model="searchContent" @keyup.enter="search" />
       </div>
     </el-col>
     <el-col :span="12">
@@ -69,7 +69,7 @@ export default {
     let searchContent = ref('');
     let avatarUrl = computed(() => store.state.user.avatarUrl);
     let isLogin = computed(() => store.state.user.isLogin);
-    const Search = () => {
+    const search = () => {
       if (searchContent.value == "") {
         return;
       }
@@ -79,7 +79,9 @@ export default {
       router.push({name: 'message'});
     };
     const ShowEditPost = () => {
-      alert("编辑动态");
+      store.dispatch("updatePostEditShow", {
+        Status: true
+      });
     };
     const ShowEditFeedback = () => {
       alert("用户反馈");
@@ -108,10 +110,9 @@ export default {
     };
     const loginShow = () => {
       $(".login_module").show();
-      alert("因网站刚开发中，短信验证码以及QQ快速登录功能暂未实现，需要登录进去可以使用测试账号test|123456");
     };
     return {
-      Search,
+      search,
       messageShow,
       ShowEditPost,
       ShowEditFeedback,

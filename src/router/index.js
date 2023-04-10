@@ -7,35 +7,39 @@ import MessageView from '@/views/MessageView.vue';
 
 const routes = [
     {
-        path: '/',
+        path: '/onlinesocial',
         name: 'home',
         component: HomeView
     },
     {
-        path: '/login/',
+        path: '/onlinesocial/login',
         name: 'login',
         component: LoginView
     },
     {
-        path: '/user/profile/',
+        path: '/onlinesocial/user/profile',
         name: 'userProfile',
         component: UserProfileView
     },
     {
-        path: '/hot',
+        path: '/onlinesocial/hot',
         name: 'hot',
         component: HomeView
     },
     {
-        path: '/myfollow',
+        path: '/onlinesocial/myfollow',
         name: 'myFollow',
         component: MyFollowView
     },
     {
-        path: '/message',
+        path: '/onlinesocial/message',
         name: 'message',
         component: MessageView
     },
+    {
+        path: '/onlinesocial/:catchAll(.*)',
+        redirect: '/onlinesocial'
+    }
 ];
 
 const router = createRouter({

@@ -1,5 +1,5 @@
 <template>
-    <a>这里是我的动态</a>
+    <a>asfasf</a>    
 </template>
 
 <script>
@@ -10,4 +10,5 @@ export default {
 </script>
 
 <style scoped>
+
 </style>

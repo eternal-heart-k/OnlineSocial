@@ -90,7 +90,7 @@ export default {
             login_verification_code.value = "";
         };
         const verificationCodeType = () => {
-            login_user_type.value = 3;
+            login_user_type.value = 2;
             $('.login_verification_code>input')[0].setAttribute("required", "required");
             $('.login_password>input').removeAttr("required");
             $('.login_password').hide();
@@ -137,7 +137,7 @@ export default {
             login_text.value = "登录中...";
             if (login_user_type.value == 1) {
                 loginWithPassword();
-            } else if (login_user_type.value == 3) {
+            } else if (login_user_type.value == 2) {
                 loginWithVerificationCode();
             }
         };
@@ -151,7 +151,6 @@ export default {
                 param: {
                     PhoneNumber: login_phone_number.value,
                     Password: login_password.value == "" ? "" : md5(login_password.value),
-                    Type: login_user_type.value
                 },
                 success() {
                     error_message.value = "";
@@ -166,13 +165,8 @@ export default {
         };
         const loginWithQQ = () => {
             error_message.value = "";
-            login_user_type.value = 2;
-
-            alert("正在加速开发中...");
             login_text.value = "登录";
-            return;
-
-            //alert("QQ快速登录");a
+            store.dispatch("getLoginWithQQUrl");
         };
         const loginWithVerificationCode = () => {
             alert("正在加速开发中...");
@@ -196,7 +190,6 @@ export default {
             loginWithPassword,
             loginWithQQ,
             loginWithVerificationCode,
-            login_user_type,
             login_phone_number,
             login_password,
             login_verification_code,
