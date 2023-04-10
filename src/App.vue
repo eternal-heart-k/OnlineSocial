@@ -22,6 +22,22 @@ export default {
   },
   mounted() {
     const store = useStore();
+
+    let geturl = window.location.href;
+    let getqyinfo = geturl.split('?')[1];
+    let getqys = new URLSearchParams('?' + getqyinfo);
+    let accessTokenOfUrl = getqys.get('accsss_token');
+    let refreshTokenOfUrl = getqys.get('refresh_token');
+    if (accessTokenOfUrl != undefined && accessTokenOfUrl != "" && refreshTokenOfUrl != undefined && refreshTokenOfUrl != "") {
+      store.dispatch("loginWithQQ", {
+        AccessToken: accessTokenOfUrl,
+        RefreshToken: refreshTokenOfUrl,
+        success() {
+          router.push({name: "home"});
+        },
+      });
+    }
+
     let accessToken = localStorage.getItem("access_token");
     let refreshToken = localStorage.getItem("refresh_token");
     if (refreshToken != undefined && refreshToken != "" && accessToken != undefined && accessToken != "") {

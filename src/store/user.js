@@ -126,6 +126,21 @@ const ModuleUser = {
                     }
                 }
             });
+        },
+        loginWithQQ(context, data) {
+            // 存储token
+            context.commit("updateToken", data);
+            // 获取用户信息
+            context.dispatch("getUserInfoByUserId", {
+                success() {
+                    data.success();
+                },
+                error(message) {
+                    alert(message);
+                }
+            });
+            // 刷新accessToken
+            context.dispatch("refreshAccessTokenInterval", {First: false});
         }
     },
     modules: {
