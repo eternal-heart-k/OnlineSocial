@@ -134,13 +134,13 @@ const ModuleUser = {
             context.dispatch("getUserInfoByUserId", {
                 success() {
                     data.success();
+                    // 刷新accessToken
+                    context.dispatch("refreshAccessTokenInterval", {First: false});
                 },
                 error(message) {
                     alert(message);
                 }
             });
-            // 刷新accessToken
-            context.dispatch("refreshAccessTokenInterval", {First: false});
         }
     },
     modules: {
