@@ -28,7 +28,11 @@
                     </div>
                 </el-header>
                 <el-main class="post-main">
-                    <p v-html="formatContent(post.Content)"></p>
+                    <p class="post-text" v-if="!post.IsCollapsed" v-html="formatContent(post.Content)"></p>
+                    <p class="post-text" v-if="post.IsCollapsed" v-html="formatContent(collapsedText(post.Content))"></p>
+                    <a class="post-text-a btn" href="#" v-if="post.Content.length > contentCountLimit" @click.prevent="toggleCollapse(post.Id)">
+                        {{ post.IsCollapsed ? " 展开" : " 收起" }}
+                    </a>
                     <div v-if="post.Images" class="post-list">
                         <el-row style="width: 75%;" :gutter="5">
                             <el-col v-for="imageUrl in post.Images.split(';')" :key="imageUrl" :span="8">
@@ -54,7 +58,7 @@
 
 <script>
 import { useStore } from 'vuex';
-import { computed } from 'vue';
+import { ref, computed } from 'vue';
 import { Delete } from "@element-plus/icons";
 
 export default {
@@ -73,7 +77,11 @@ export default {
         });
         let postList = computed({
             get() {
-                return store.state.post.myPostList;
+                var list = store.state.post.myPostList;
+                for (let i = 0; i < list.length; i ++ ) {
+                    list[i]["IsCollapsed"] = true;
+                }
+                return list;
             },
             set() {
             }
@@ -92,6 +100,18 @@ export default {
             set() {
             }
         });
+        const contentCountLimit = ref(150);
+        const collapsedText = (content) => {
+            return content.slice(0, contentCountLimit.value) + " ...";
+        };
+        const toggleCollapse = (id) => {
+            for (let i = 0; i < postList.value.length; i ++ ) {
+                if (postList.value[i].Id == id) {
+                    postList.value[i].IsCollapsed = !postList.value[i].IsCollapsed;
+                    break;
+                }
+            }
+        };
         const formatContent = (content) => {
             if (content == undefined || content == "") return content;
             return content.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, '&nbsp;')
@@ -133,6 +153,9 @@ export default {
             postList,
             avatarUrl,
             userName,
+            contentCountLimit,
+            toggleCollapse,
+            collapsedText,
             formatContent,
             formatDate,
             formatReadCount,
@@ -222,5 +245,14 @@ export default {
 .post-top-options {
     flex: 1;
     text-align: right;
+}
+.post-text {
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    display: inline;
+}
+.post-text-a {
+    text-decoration: none;
+    color: #eb7350;;
 }
 </style>
