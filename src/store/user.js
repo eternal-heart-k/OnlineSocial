@@ -16,6 +16,10 @@ const ModuleUser = {
     getters: {
     },
     mutations: {
+        updateUserId(state) {
+            let userId = jwt_decode(localStorage.getItem("access_token")).id;
+            state.userId = userId;
+        },
         updateUser(state, user) {
             state.userId = user.UserId;
             state.userName = user.UserName;

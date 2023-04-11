@@ -1,9 +1,13 @@
 <template>
   <div class="web-module">
-    <el-header class="header">
-      <HomeHeaderView />
-    </el-header>
-    <router-view :key="$route.fullPath" />
+    <div class="navbar">
+      <el-header class="header">
+        <HomeHeaderView />
+      </el-header>
+    </div>
+    <div class="web-main">
+      <router-view :key="$route.fullPath" />
+    </div>
   </div>
   <PostEdit />
 </template>
@@ -22,7 +26,6 @@ export default {
   },
   mounted() {
     const store = useStore();
-
     let geturl = window.location.href;
     let indexL = geturl.indexOf("?access_token=");
     let indexR = geturl.indexOf("&refresh_token=");
@@ -62,11 +65,20 @@ export default {
 </script>
 
 <style scoped>
-.web-module {
-  background-color: #F7F8FA;
+.navbar {
+  display: flex;
+  width: 100%;
 }
 .header {
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
   box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
   background-color: #FFFFFF;
+}
+.web-main {
+  display: flex;
 }
 </style>

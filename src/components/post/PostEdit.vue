@@ -67,7 +67,6 @@ export default {
     let fileList = ref([]);
     let previewUrls = ref([]);
     let uploadImageDisabled = computed(() => fileList.value.length >= 9);
-    const fit = "cover";
     const loading = ref(false);
     const clearValue = () => {
       content.value = "";
@@ -80,7 +79,7 @@ export default {
       });
     };
     const handleClose = () => {
-      if (content.value == "") {
+      if (content.value == "" && fileList.value.length == 0 && previewUrls.value.length == 0) {
         hideForm();
         return;
       }
@@ -163,7 +162,6 @@ export default {
       previewUrls.value.splice(index, 1);
     };
     return {
-      fit,
       dialogVisible,
       content,
       fileList,
@@ -181,6 +179,15 @@ export default {
 };
 </script>
 
+<style>
+.single-image {
+  border-radius: 0.5rem;
+}
+.single-image:hover {
+  opacity: 0.8;
+}
+</style>
+
 <style scoped>
 .post-content-word-size {
   font-size: 14px;
@@ -195,12 +202,6 @@ export default {
   height: 100%;
   font-size: 20px;
   color: gray;
-}
-.single-image {
-  border-radius: 0.5rem;
-}
-.single-image:hover {
-  opacity: 0.8;
 }
 .image-delete {
   position: absolute;

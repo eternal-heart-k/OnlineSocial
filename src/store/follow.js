@@ -16,7 +16,7 @@ const ModuleFollow = {
         },
     },
     actions: {
-        getFollowCount(context) {
+        getFollowCount(context, data) {
             $.ajax({
                 url: context.rootState.urlPre + "/api/follow/count?userId=" + context.rootState.user.userId,
                 type: "get",
@@ -26,14 +26,14 @@ const ModuleFollow = {
                 contentType: "application/json",
                 success(resp) {
                     if (resp.IsSuccess) {
-                        context.commit("updateFollowCount", resp.Result);
+                        data.success(resp.Result);
                     } else {
-                        alert(resp.Message);
+                        data.error(resp.Message);
                     }
                 }
             });
         },
-        getFollowedCount(context) {
+        getFollowedCount(context, data) {
             $.ajax({
                 url: context.rootState.urlPre + "/api/follow/fans?userId=" + context.rootState.user.userId,
                 type: "get",
@@ -43,9 +43,9 @@ const ModuleFollow = {
                 contentType: "application/json",
                 success(resp) {
                     if (resp.IsSuccess) {
-                        context.commit("updateFollowedCount", resp.Result);
+                        data.success(resp.Result);
                     } else {
-                        alert(resp.Message);
+                        data.error(resp.Message);
                     }
                 }
             });

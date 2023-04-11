@@ -3,12 +3,49 @@ import $ from 'jquery';
 const ModulePost = {
     state: {
         postEditShow: false,
+        hotPostList: [],
+        followPostList: [],
+        myPostList: [],
+        hotPageIndex: 1,
+        followPageIndex: 1,
+        myPageIndex: 1,
+        myTotalCount: 0,
     },
     getters: {
     },
     mutations: {
         updatePostEditShow(state, status) {
             state.postEditShow = status;
+        },
+        refreshHotPostList(state, data) {
+            state.hotPageIndex = 1;
+            state.hotPostList = data;
+        },
+        addHotPostList(state, data) {
+            state.hotPageIndex ++ ;
+            state.hotPostList.push(data);
+        },
+        refreshFollowPostList(state, data) {
+            state.followPageIndex = 1;
+            state.followPostList = data;
+        },
+        addFollowPostList(state, data) {
+            state.followPageIndex ++ ;
+            state.followPostList.push(data);
+        },
+        refreshMyPostList(state, data) {
+            state.myTotalCount = data.TotalCount;
+            state.myPageIndex = 1;
+            state.myPostList = data.Items;
+        },
+        addMyPostList(state, data) {
+            state.myPageIndex ++ ;
+            state.myPostList.push(data);
+        },
+        deleteMyPostFromList(state, id) {
+            state.myPostList = state.myPostList.filter((item) => {
+                return item.Id != id;
+            });
         },
     },
     actions: {
@@ -55,7 +92,43 @@ const ModulePost = {
                     }
                 }
             });
-        }
+        },
+        getPostList(context, data) {
+            $.ajax({
+                url: context.rootState.urlPre + "/api/post/page",
+                type: "post",
+                headers: {
+                    'Authorization': "Bearer " + context.rootState.user.accessToken,
+                },
+                data: JSON.stringify(data.param),
+                contentType: "application/json",
+                success(resp) {
+                    if (resp.IsSuccess) {
+                        data.success(resp.Result);
+                    } else {
+                        data.error(resp.Message);
+                    }
+                }
+            });
+        },
+        deleteMyPost(context, data) {
+            $.ajax({
+                url: context.rootState.urlPre + "/api/post?id=" + data.Id,
+                type: "delete",
+                headers: {
+                    'Authorization': "Bearer " + context.rootState.user.accessToken,
+                },
+                contentType: "application/json",
+                success(resp) {
+                    if (resp.IsSuccess) {
+                        context.commit("deleteMyPostFromList", data.Id);
+                        data.success();
+                    } else {
+                        data.error(resp.Message);
+                    }
+                }
+            });
+        },
     },
     modules: {
     }

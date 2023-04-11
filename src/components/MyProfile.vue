@@ -14,10 +14,10 @@
                 <el-col :span="16" class="user-info-main-right">
                     <el-row class="username">{{ userName }}</el-row>
                     <el-row class="follow-info">
-                        <a class="follow-count btn" @click="followUserInfoShow">
+                        <a class="follow-count btn hover-orign" @click="followUserInfoShow">
                             关注&nbsp; {{ followCount }}
                         </a>
-                        <a class="followed-count btn" @click="followedUserInfoShow">
+                        <a class="followed-count btn hover-orign" @click="followedUserInfoShow">
                             粉丝&nbsp; {{ followedCount }}
                         </a>
                     </el-row>
@@ -153,6 +153,12 @@ export default {
 }
 </script>
 
+<style>
+.hover-orign:hover{
+    color: #eb7350;
+}
+</style>
+
 <style scoped>
 .my-avatar {
     cursor: pointer;
@@ -171,12 +177,6 @@ export default {
 }
 .follow-count {
     margin-right: 20px;
-}
-.follow-count:hover {
-    color: #eb7350;
-}
-.followed-count:hover {
-    color: #eb7350;
 }
 .my-info-other {
     margin-top: 20px;

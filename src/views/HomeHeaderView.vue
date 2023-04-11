@@ -27,7 +27,7 @@
         </div>
         <div class="box center">
           <router-link :to="{name: 'userProfile' }">
-            <el-avatar class="btn" :size="35" :src="avatarUrl" @click="clickUserProfile"/>
+            <el-avatar class="btn" :size="35" :src="avatarUrl" />
           </router-link>
         </div>
       </div>
@@ -104,10 +104,6 @@ export default {
         // 点击取消按钮后执行的操作
       });
     };
-    const clickUserProfile = () => {
-      store.dispatch("getFollowCount");
-      store.dispatch("getFollowedCount");
-    };
     const loginShow = () => {
       $(".login_module").show();
     };
@@ -117,7 +113,6 @@ export default {
       ShowEditPost,
       ShowEditFeedback,
       LogOut,
-      clickUserProfile,
       loginShow,
       searchContent,
       avatarUrl,

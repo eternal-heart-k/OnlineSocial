@@ -6,7 +6,7 @@ import ModulePost from './post';
 
 export default createStore({
   state: {
-    urlPre: "https://kanghui29.cn", // "https://kanghui29.cn" "https://localhost:7030"
+    urlPre: "https://localhost:7030", // "https://kanghui29.cn" "https://localhost:7030"
     unAuthorize: "身份认证已过期，请重新登录",
   },
   getters: {
