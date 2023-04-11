@@ -191,6 +191,9 @@ export default {
 </style>
 
 <style scoped>
+.hover-orign:hover{
+    color: #eb7350;
+}
 .total-count {
     margin: 0 20px 0;
 }
@@ -253,6 +256,6 @@ export default {
 }
 .post-text-a {
     text-decoration: none;
-    color: #eb7350;;
+    color: #409eff;
 }
 </style>
