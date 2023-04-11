@@ -51,7 +51,6 @@ export default {
       });
       store.dispatch("getUserInfoByUserId", {
         success() {
-          router.push({name: "home"});
         },
         error(message) {
           alert(message);
