@@ -47,6 +47,18 @@ const ModulePost = {
                 return item.Id != id;
             });
         },
+        updateMyPostLikeStatus(state, id) {
+            for (let item of state.myPostList) {
+                if (item.Id == id) {
+                    if (item.IsLiked) {
+                        item.LikeCount -- ;
+                    } else {
+                        item.LikeCount ++ ;
+                    }
+                    item.IsLiked = !item.IsLiked;
+                }
+            }
+        }
     },
     actions: {
         updatePostEditShow(context, data) {
@@ -122,6 +134,42 @@ const ModulePost = {
                 success(resp) {
                     if (resp.IsSuccess) {
                         context.commit("deleteMyPostFromList", data.Id);
+                        data.success();
+                    } else {
+                        data.error(resp.Message);
+                    }
+                }
+            });
+        },
+        like(context, data) {
+            $.ajax({
+                url: context.rootState.urlPre + "/api/post/like",
+                type: "post",
+                headers: {
+                    'Authorization': "Bearer " + context.rootState.user.accessToken,
+                },
+                data: JSON.stringify(data.param),
+                contentType: "application/json",
+                success(resp) {
+                    if (resp.IsSuccess) {
+                        data.success();
+                    } else {
+                        data.error(resp.Message);
+                    }
+                }
+            });
+        },
+        cancelLike(context, data) {
+            $.ajax({
+                url: context.rootState.urlPre + "/api/post/like",
+                type: "delete",
+                headers: {
+                    'Authorization': "Bearer " + context.rootState.user.accessToken,
+                },
+                data: JSON.stringify(data.param),
+                contentType: "application/json",
+                success(resp) {
+                    if (resp.IsSuccess) {
                         data.success();
                     } else {
                         data.error(resp.Message);

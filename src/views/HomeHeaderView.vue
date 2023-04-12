@@ -100,6 +100,7 @@ export default {
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
         location.reload();
+        $(".login_module").hide();
       }).catch(() => {
         // 点击取消按钮后执行的操作
       });

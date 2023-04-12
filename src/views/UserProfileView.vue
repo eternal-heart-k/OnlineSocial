@@ -34,6 +34,7 @@ export default {
     },
     beforeCreate() {
         const store = useStore();
+        if (!store.state.user.isLogin) return;
         store.dispatch("getUserInfoByUserId", {
             success() {
                 store.dispatch("getFollowCount", {

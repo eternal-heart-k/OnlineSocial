@@ -47,6 +47,7 @@ export default {
     let accessToken = localStorage.getItem("access_token");
     let refreshToken = localStorage.getItem("refresh_token");
     if (refreshToken != undefined && refreshToken != "" && accessToken != undefined && accessToken != "") {
+      store.commit("updateUserId");
       store.dispatch("refreshAccessToken", {
         First: true,
         AccessToken: accessToken,

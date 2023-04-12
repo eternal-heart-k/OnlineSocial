@@ -133,12 +133,12 @@ export default {
 .login_module
 {
     background: #1d2b3a;
-    position: absolute;
+    position: fixed;
     top: 45%;
     left: 50%;
     transform: translate(-50%,-50%);
     width: 25%;
-    height: 50%;
+    height: 52%;
     box-shadow: 0 15px 25px rgba(0,0,0,.5);
     border-radius: 10px;
     margin: 10px;
