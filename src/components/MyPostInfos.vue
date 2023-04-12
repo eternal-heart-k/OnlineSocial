@@ -28,18 +28,29 @@
                     </div>
                 </el-header>
                 <el-main class="post-main">
-                    <p class="post-text" v-if="!post.IsCollapsed" v-html="formatContent(post.Content)"></p>
+                    <p class="post-text" v-if="!post.OverFlow || !post.IsCollapsed" v-html="formatContent(post.Content)"></p>
                     <p class="post-text" v-if="post.IsCollapsed" v-html="formatContent(collapsedText(post.Content))"></p>
-                    <a class="post-text-a btn" href="#" v-if="post.Content.length > contentCountLimit" @click.prevent="toggleCollapse(post.Id)">
+                    <a class="post-text-a btn" href="#" v-if="post.OverFlow" @click.prevent="toggleCollapse(post.Id)">
                         {{ post.IsCollapsed ? " 展开" : " 收起" }}
                     </a>
                     <div v-if="post.Images" class="post-list">
-                        <el-row style="width: 75%;" :gutter="5">
+                        <el-row style="width: 85%;" :gutter="5">
                             <el-col v-for="imageUrl in post.Images.split(';')" :key="imageUrl" :span="8">
                                 <div style="position: relative;">
-                                    <el-image class="single-image" :src="imageUrl"></el-image>
+                                    <el-image 
+                                    :lazy="true" 
+                                    class="single-image" 
+                                    :src="imageUrl"
+                                    @click="showImagePre(imageUrl)"
+                                    ></el-image>
                                 </div>
                             </el-col>
+                            <el-image-viewer 
+                            :url-list="[nowImagePre]"
+                            :hide-on-click-modal="true"
+                            v-if="nowImagePre"
+                            @close="closeImagePre"
+                            style="position: fixed; z-index: 9999;"/>
                         </el-row>
                     </div>
                 </el-main>
@@ -66,8 +77,25 @@ export default {
     components: {
         Delete,
     },
+    beforeCreate() {
+        const store = useStore();
+        store.dispatch("getPostList", {
+            param: {
+                UserId: store.state.user.userId,
+                PageIndex: store.state.post.myPageIndex,
+                Type: 1
+            },
+            success(result) {
+                store.commit("refreshMyPostList", result);
+            },
+            error(message) {
+                alert(message);
+            }
+        });
+    },
     setup() {
         const store = useStore();
+        const contentCountLimit = ref(150);
         let postTotalCount = computed({
             get() {
                 return store.state.post.myTotalCount;
@@ -79,7 +107,13 @@ export default {
             get() {
                 var list = store.state.post.myPostList;
                 for (let i = 0; i < list.length; i ++ ) {
-                    list[i]["IsCollapsed"] = true;
+                    if (list[i].Content.length > contentCountLimit.value) {
+                        list[i]["OverFlow"] = true;
+                        list[i]["IsCollapsed"] = true;
+                    } else {
+                        list[i]["OverFlow"] = false;
+                        list[i]["IsCollapsed"] = false;
+                    }
                 }
                 return list;
             },
@@ -100,7 +134,6 @@ export default {
             set() {
             }
         });
-        const contentCountLimit = ref(150);
         const collapsedText = (content) => {
             return content.slice(0, contentCountLimit.value) + " ...";
         };
@@ -148,12 +181,33 @@ export default {
                 }
             })
         };
+        let nowImagePre = ref(null);
+        const stopScroll = () => {
+            document.body.style.overflow = 'hidden';
+            document.body.style.height = '100%';
+        };
+        const openScroll = () => {
+            document.body.style.overflow = '';
+            document.body.style.height = '';
+        }
+        const showImagePre = (url) => {
+            nowImagePre.value = url;
+            stopScroll();
+        };
+        const closeImagePre = () => {
+            nowImagePre.value = null;
+            openScroll();
+        };
+
         return {
             postTotalCount,
             postList,
             avatarUrl,
             userName,
             contentCountLimit,
+            nowImagePre,
+            showImagePre,
+            closeImagePre,
             toggleCollapse,
             collapsedText,
             formatContent,

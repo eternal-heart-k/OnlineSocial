@@ -71,7 +71,7 @@ export default {
 }
 .header {
   position: fixed;
-  z-index: 9999;
+  z-index: 99;
   left: 0;
   top: 0;
   width: 100%;
@@ -80,5 +80,6 @@ export default {
 }
 .web-main {
   display: flex;
+  margin-top: 80px;
 }
 </style>

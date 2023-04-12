@@ -1,5 +1,11 @@
 <template>
-    <el-dialog :center="true" title="修改个人信息" v-model="dialogVisible" width="30%" :before-close="cancel">
+    <el-dialog 
+    :center="true" 
+    title="修改个人信息" 
+    v-model="dialogVisible" 
+    width="30%" 
+    :before-close="cancel"
+    @open="beforeOpen">
         <el-form label-width="20%" @submit.prevent>
             <el-form-item label="昵称">
                 <el-input v-model="userName" type="text" @keyup.enter.prevent></el-input>
@@ -45,7 +51,7 @@ export default {
         let gender = ref(store.state.user.gender == "男" ? 1 : 0);
         let birthday = ref(store.state.user.birthday.split("T")[0]);
         let personalSignature = ref(store.state.user.personalSignature);
-        const userId = store.state.user.userId;
+        let userId = store.state.user.userId;
         const restoreInputValue = () => {
             userName.value = store.state.user.userName;
             gender.value = store.state.user.gender == "男" ? 1 : 0;
@@ -77,6 +83,13 @@ export default {
                 }
             });
         };
+        const beforeOpen = () => {
+            userName.value = store.state.user.userName;
+            gender.value = store.state.user.gender == "男" ? 1 : 0;
+            birthday.value = store.state.user.birthday.split("T")[0];
+            personalSignature.value = store.state.user.personalSignature;
+            userId = store.state.user.userId;
+        };
         return {
             dialogVisible,
             userName,
@@ -85,6 +98,7 @@ export default {
             personalSignature,
             cancel,
             submitForm,
+            beforeOpen,
         }
     },
 };

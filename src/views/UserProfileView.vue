@@ -32,7 +32,7 @@ export default {
         UpdatePasswordForm,
         UpdateUserInfoForm,
     },
-    mounted() {
+    beforeCreate() {
         const store = useStore();
         store.dispatch("getUserInfoByUserId", {
             success() {
@@ -42,19 +42,6 @@ export default {
                         store.dispatch("getFollowedCount", {
                             success(result) {
                                 store.commit("updateFollowedCount", result);
-                                store.dispatch("getPostList", {
-                                    param: {
-                                        UserId: store.state.user.userId,
-                                        PageIndex: store.state.post.myPageIndex,
-                                        Type: 1
-                                    },
-                                    success(result) {
-                                        store.commit("refreshMyPostList", result);
-                                    },
-                                    error(message) {
-                                        alert(message);
-                                    }
-                                });
                             },
                             error(message) {
                                 alert(message);
@@ -71,9 +58,6 @@ export default {
             }
         });
     },
-    setup() {
-        
-    }
 }
 </script>
 
@@ -89,6 +73,5 @@ export default {
 }
 .user-profile-right {
     position: relative;
-    top: 80px;
 }
 </style>
