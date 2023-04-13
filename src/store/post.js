@@ -18,46 +18,60 @@ const ModulePost = {
             state.postEditShow = status;
         },
         refreshHotPostList(state, data) {
-            state.hotPageIndex = 1;
+            state.hotPageIndex = 2;
             state.hotPostList = data;
         },
         addHotPostList(state, data) {
             state.hotPageIndex ++ ;
-            state.hotPostList.push(data);
+            state.hotPostList = state.hotPostList.concat(data);
         },
         refreshFollowPostList(state, data) {
-            state.followPageIndex = 1;
+            state.followPageIndex = 2;
             state.followPostList = data;
         },
         addFollowPostList(state, data) {
             state.followPageIndex ++ ;
-            state.followPostList.push(data);
-        },
-        refreshMyPostList(state, data) {
-            state.myTotalCount = data.TotalCount;
-            state.myPageIndex = 1;
-            state.myPostList = data.Items;
+            state.followPostList = state.followPostList.concat(data);
         },
         addMyPostList(state, data) {
+            state.myTotalCount = data.TotalCount;
             state.myPageIndex ++ ;
-            state.myPostList.push(data);
+            state.myPostList = state.myPostList.concat(data.Items);
         },
-        deleteMyPostFromList(state, id) {
-            state.myPostList = state.myPostList.filter((item) => {
-                return item.Id != id;
-            });
+        deleteMyPostFromList(state, index) {
+            state.myPostList.splice(index, 1);
         },
-        updateMyPostLikeStatus(state, id) {
-            for (let item of state.myPostList) {
-                if (item.Id == id) {
-                    if (item.IsLiked) {
-                        item.LikeCount -- ;
-                    } else {
-                        item.LikeCount ++ ;
-                    }
-                    item.IsLiked = !item.IsLiked;
-                }
+        updateMyPostLikeStatus(state, data) {
+            if (data.Status) {
+                state.myPostList[data.PostIndex].LikeCount -- ;
+            } else {
+                state.myPostList[data.PostIndex].LikeCount ++ ;
             }
+            state.myPostList[data.PostIndex].IsLiked = !data.Status;
+        },
+        updateMyPostCommentLikeStatus(state, data) {
+            if (data.Status) {
+                state.myPostList[data.PostIndex].PostCommentList[data.PostCommentIndex].LikeCount -- ;
+            } else {
+                state.myPostList[data.PostIndex].PostCommentList[data.PostCommentIndex].LikeCount ++ ;
+            }
+            state.myPostList[data.PostIndex].PostCommentList[data.PostCommentIndex].IsLiked = !data.Status;
+        },
+        updateMyPostCommentOrderType(state, data) {
+            state.myPostList[data.PostIndex].CommentOrderType = data.OrderType;
+        },
+        refreshMyPostComment(state, data) {
+            state.myPostList[data.PostIndex].PostCommentPageIndex = 2;
+            state.myPostList[data.PostIndex].PostCommentList = data.Items;
+            state.myPostList[data.PostIndex].CommentCount = data.TotalCount;
+        },
+        addMyPostComment(state, data) {
+            state.myPostList[data.PostIndex].PostCommentPageIndex ++ ;
+            state.myPostList[data.PostIndex].CommentCount = data.TotalCount;
+            state.myPostList[data.PostIndex].PostCommentList = state.myPostList[data.PostIndex].PostCommentList.concat(data.Items);
+        },
+        updateMyPostCommentNoMore(state, data) {
+            state.myPostList[data.PostIndex].NoMore = data.Status;
         }
     },
     actions: {
@@ -133,7 +147,6 @@ const ModulePost = {
                 contentType: "application/json",
                 success(resp) {
                     if (resp.IsSuccess) {
-                        context.commit("deleteMyPostFromList", data.Id);
                         data.success();
                     } else {
                         data.error(resp.Message);

@@ -10,6 +10,7 @@
     </div>
   </div>
   <PostEdit />
+  <ImagePreview />
 </template>
 
 <script>
@@ -17,12 +18,14 @@ import HomeHeaderView from './views/HomeHeaderView.vue';
 import { useStore } from 'vuex';
 import router from '@/router/index';
 import PostEdit from './components/post/PostEdit.vue';
+import ImagePreview from './components/ImagePreview';
 
 export default {
   name: "App",
   components: {
     HomeHeaderView,
     PostEdit,
+    ImagePreview,
   },
   mounted() {
     const store = useStore();
@@ -48,7 +51,7 @@ export default {
     let refreshToken = localStorage.getItem("refresh_token");
     if (refreshToken != undefined && refreshToken != "" && accessToken != undefined && accessToken != "") {
       store.commit("updateUserId");
-      store.dispatch("refreshAccessToken", {
+      store.dispatch("refreshAccessTokenInterval", {
         First: true,
         AccessToken: accessToken,
         RefreshToken: refreshToken
@@ -61,7 +64,7 @@ export default {
         }
       });
     }
-  }
+  },
 }
 </script>
 
