@@ -63,6 +63,11 @@ import $ from 'jquery';
 
 export default {
   name: "HomeHeaderView",
+  components: {
+    Message,
+    Edit,
+    Promotion, 
+  },
   setup() {
     const store = useStore();
     const router = useRouter();
@@ -88,7 +93,7 @@ export default {
     };
     const LogOut = () => {
       ElMessageBox.confirm('确认退出么？', '提示', {
-        confirmButtonText: '确定',
+        confirmButtonText: '确认',
         cancelButtonText: '取消',
         type: 'warning',
         center: true,
@@ -120,11 +125,6 @@ export default {
       isLogin,
     }
   },
-  components: {
-    Message,
-    Edit,
-    Promotion,
-  }
 }
 </script>
 

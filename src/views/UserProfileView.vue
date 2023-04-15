@@ -74,5 +74,6 @@ export default {
 }
 .user-profile-right {
     position: relative;
+    margin-top: 35px;
 }
 </style>

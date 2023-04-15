@@ -3,11 +3,15 @@ import $ from 'jquery';
 const ModulePost = {
     state: {
         postEditShow: false,
+
+        hotRangeType: 0,
         hotPostList: [],
-        followPostList: [],
-        myPostList: [],
         hotPageIndex: 1,
+
+        followPostList: [],
         followPageIndex: 1,
+
+        myPostList: [],
         myPageIndex: 1,
         myTotalCount: 0,
     },
@@ -25,6 +29,59 @@ const ModulePost = {
             state.hotPageIndex ++ ;
             state.hotPostList = state.hotPostList.concat(data);
         },
+        updateHotPostLikeStatus(state, data) {
+            if (data.Status) {
+                state.hotPostList[data.PostIndex].LikeCount -- ;
+            } else {
+                state.hotPostList[data.PostIndex].LikeCount ++ ;
+            }
+            state.hotPostList[data.PostIndex].IsLiked = !data.Status;
+        },
+        deleteHotPostFromList(state, index) {
+            state.hotPostList.splice(index, 1);
+        },
+        updateHotPostCommentLikeStatus(state, data) {
+            if (data.Status) {
+                state.hotPostList[data.PostIndex].PostCommentList[data.PostCommentIndex].LikeCount -- ;
+            } else {
+                state.hotPostList[data.PostIndex].PostCommentList[data.PostCommentIndex].LikeCount ++ ;
+            }
+            state.hotPostList[data.PostIndex].PostCommentList[data.PostCommentIndex].IsLiked = !data.Status;
+        },
+        deleteHotPostComment(state, data) {
+            state.hotPostList[data.PostIndex].CommentCount -- ;
+            state.hotPostList[data.PostIndex].PostCommentList.splice(data.PostCommentIndex, 1);
+        },
+        updateHotPostCommentOrderType(state, data) {
+            state.hotPostList[data.PostIndex].CommentOrderType = data.OrderType;
+            state.hotPostList[data.PostIndex].PostCommentList = [];
+        },
+        updateHotPostCommentLoading(state, data) {
+            state.hotPostList[data.PostIndex].PostCommentLoading = data.Status;
+        },
+        updateHotPostCommentNoMore(state, data) {
+            state.hotPostList[data.PostIndex].NoMore = data.Status;
+        },
+        refreshHotPostComment(state, data) {
+            state.hotPostList[data.PostIndex].PostCommentPageIndex = 2;
+            state.hotPostList[data.PostIndex].PostCommentList = data.Items;
+            state.hotPostList[data.PostIndex].CommentCount = data.TotalCount;
+        },
+        addHotPostComment(state, data) {
+            state.hotPostList[data.PostIndex].PostCommentPageIndex ++ ;
+            state.hotPostList[data.PostIndex].PostCommentList = state.hotPostList[data.PostIndex].PostCommentList.concat(data.Items);
+        },
+        updateHotRangeType(state, status) {
+            state.hotRangeType = status;
+            state.hotPostList = [];
+            state.hotPageIndex = 1;
+        },
+
+
+
+
+
+
         refreshFollowPostList(state, data) {
             state.followPageIndex = 2;
             state.followPostList = data;
@@ -33,6 +90,9 @@ const ModulePost = {
             state.followPageIndex ++ ;
             state.followPostList = state.followPostList.concat(data);
         },
+        
+
+
         addMyPostList(state, data) {
             state.myTotalCount = data.TotalCount;
             state.myPageIndex ++ ;
@@ -59,6 +119,7 @@ const ModulePost = {
         },
         updateMyPostCommentOrderType(state, data) {
             state.myPostList[data.PostIndex].CommentOrderType = data.OrderType;
+            state.myPostList[data.PostIndex].PostCommentList = [];
         },
         refreshMyPostComment(state, data) {
             state.myPostList[data.PostIndex].PostCommentPageIndex = 2;
@@ -72,7 +133,44 @@ const ModulePost = {
         },
         updateMyPostCommentNoMore(state, data) {
             state.myPostList[data.PostIndex].NoMore = data.Status;
-        }
+        },
+        updateMyPostCommentLoading(state, data) {
+            state.myPostList[data.PostIndex].PostCommentLoading = data.Status;
+        },
+        updateMyPostCommentReplyCount(state, data) {
+            state.myPostList[data.PostIndex].PostCommentList[data.PostCommentIndex].ReplyCount ++ ;
+        },
+        deleteMyPostComment(state, data) {
+            state.myPostList[data.PostIndex].CommentCount -- ;
+            state.myPostList[data.PostIndex].PostCommentList.splice(data.PostCommentIndex, 1);
+        },
+        deleteMyPostCommentByCommentId(state, commentId) {
+            let flag = false;
+            for (let i = 0; i < state.myPostList.length; i ++ ) {
+                if (flag) break;
+                for (let j = 0; j < state.myPostList[i].PostCommentList.length; j ++ ) {
+                    if (state.myPostList[i].PostCommentList[j].Id == commentId) {
+                        state.myPostList[i].PostCommentList.splice(j, 1);
+                        state.myPostList[i].CommentCount -- ;
+                        flag = true;
+                        break;
+                    }
+                }
+            }
+        },
+        updateMyPostCommentReplyCountByRootCommentId(state, rootCommentId) {
+            let flag = false;
+            for (let i = 0; i < state.myPostList.length; i ++ ) {
+                if (flag) break;
+                for (let j = 0; j < state.myPostList[i].PostCommentList.length; j ++ ) {
+                    if (state.myPostList[i].PostCommentList[j].Id == rootCommentId) {
+                        state.myPostList[i].PostCommentList[j].ReplyCount ++ ;
+                        flag = true;
+                        break;
+                    }
+                }
+            }
+        },
     },
     actions: {
         updatePostEditShow(context, data) {

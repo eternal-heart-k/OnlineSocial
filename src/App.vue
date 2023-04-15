@@ -57,6 +57,7 @@ export default {
         RefreshToken: refreshToken
       });
       store.dispatch("getUserInfoByUserId", {
+        async: false,
         success() {
         },
         error(message) {
@@ -67,6 +68,16 @@ export default {
   },
 }
 </script>
+
+<style>
+.btn {
+    cursor: pointer;
+    transition: 0.3s all;
+}
+.btn:active {
+    transform: scale(0.9);
+}
+</style>
 
 <style scoped>
 .navbar {
@@ -84,6 +95,6 @@ export default {
 }
 .web-main {
   display: flex;
-  margin-top: 80px;
+  margin-top: 40px;
 }
 </style>

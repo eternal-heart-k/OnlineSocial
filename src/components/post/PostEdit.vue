@@ -47,7 +47,7 @@
 <script>
 import { ref, computed } from "vue";
 import { useStore } from 'vuex';
-import { ElMessageBox } from 'element-plus';
+import { ElMessageBox, ElMessage } from 'element-plus';
 import { Picture } from "@element-plus/icons";
 
 export default {
@@ -120,15 +120,14 @@ export default {
               loading.value = false;
               clearValue();
               hideForm();
-              setTimeout(() => {
-                alert("发布成功");
-              }, 300);
+              ElMessage({
+                  message: "发布成功",
+                  type: 'success',
+              });
             },
             error(message) {
               loading.value = false;
-              setTimeout(() => {
-                alert(message);
-              }, 300);
+              ElMessage.error(message);
             }
           })
         }

@@ -8,15 +8,25 @@
 
 <script>
 import HomeMainView from './HomeMainView.vue';
+import { ElMessage } from 'element-plus';
+import { useStore } from 'vuex';
 
 export default {
   name: 'HomeView',
-  mounted() {
-    
-  },
   components: {
     HomeMainView,
-  }
+  },
+  beforeCreate() {
+    const store = useStore();
+    if (!store.state.user.isLogin) return;
+    store.dispatch("getUserInfoByUserId", {
+        success() {
+        },
+        error(message) {
+          ElMessage.error(message);
+        }
+    });
+  },
 }
 </script>
 

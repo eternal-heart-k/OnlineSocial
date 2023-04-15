@@ -45,6 +45,7 @@ const ModuleUser = {
                 headers: {
                     'Authorization': "Bearer " + context.rootState.user.accessToken,
                 },
+                async: data.async == null ? true : false,
                 success(resp) {
                     if (resp.IsSuccess) {
                         context.commit("updateUser", {
