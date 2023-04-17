@@ -260,7 +260,7 @@ export default {
                     }
                 },
                 error(message) {
-                    alert(message);
+                    ElMessage.error(message);
                 }
             };
             if (isLiked) {
@@ -289,7 +289,7 @@ export default {
                 },
                 error(message) {
                     loading.value = false;
-                    alert(message);
+                    ElMessage.error(message);
                 }
             });
         };
@@ -312,7 +312,7 @@ export default {
                 },
                 error(message) {
                     loading.value = false;
-                    alert(message);
+                    ElMessage.error(message);
                 }
             });
         };
@@ -365,7 +365,7 @@ export default {
                     });
                 },
                 error(message) {
-                    alert(message);
+                    ElMessage.error(message);
                 }
             };
             if (isLiked) {

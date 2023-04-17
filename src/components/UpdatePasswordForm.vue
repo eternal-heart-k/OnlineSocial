@@ -25,6 +25,7 @@
 import { ref, computed } from 'vue';
 import { useStore } from 'vuex';
 import md5 from 'js-md5';
+import { ElMessage } from 'element-plus';
 
 export default {
   setup() {
@@ -62,7 +63,14 @@ export default {
         store.dispatch("updatePassword", {
             param: param,
             success() {
-                clearInputValue();
+              clearInputValue();
+              ElMessage({
+                type: 'success',
+                message: "修改成功",
+              });
+            },
+            error(message) {
+              ElMessage.error(message);
             }
         });
     }

@@ -15,6 +15,8 @@
     </div>
     <UpdateUserInfoForm />
     <UpdatePasswordForm />
+    <FollowGroupShow />
+    <FansListShow />
 </template>
 
 <script>
@@ -23,6 +25,8 @@ import MyPostInfos from '@/components/MyPostInfos.vue';
 import UpdatePasswordForm from '@/components/UpdatePasswordForm.vue';
 import UpdateUserInfoForm from '@/components/UpdateUserInfoForm.vue';
 import { useStore } from 'vuex';
+import FollowGroupShow from '../components/follow/FollowGroupShow.vue';
+import FansListShow from '../components/follow/FansListShow.vue';
 
 export default {
     name: "UserProfileView",
@@ -31,6 +35,8 @@ export default {
         MyPostInfos,
         UpdatePasswordForm,
         UpdateUserInfoForm,
+        FollowGroupShow,
+        FansListShow,
     },
     beforeCreate() {
         const store = useStore();

@@ -45,6 +45,7 @@
 <script>
 import { useStore } from 'vuex';
 import { computed } from 'vue';
+import { ElMessage } from 'element-plus';
 
 export default {
     name: "MyProfile",
@@ -103,10 +104,34 @@ export default {
             set() {}
         });
         const followUserInfoShow = () => {
-            alert("关注信息");
+            store.dispatch("beforeAction", {
+                func() {
+                    store.commit("updateFollowGroupVisible", true);
+                    store.dispatch("getFollowGroupList", {
+                        success(result) {
+                            store.commit("refreshFollowGroupList", result);
+                        },
+                        error(message) {
+                            ElMessage.error(message);
+                        }
+                    });
+                }
+            });
         };
         const followedUserInfoShow = () => {
-            alert("粉丝信息");
+            store.dispatch("getFansList", {
+                param: {
+                    PageIndex: 1,
+                    MyUserId: store.state.user.userId
+                },
+                success(result) {
+                    store.commit("refreshFansList", result.Items);
+                    store.commit("updateFansListVisible", true);
+                },
+                error(message) {
+                    ElMessage.error(message);
+                }
+            });
         };
         const updateUserInfoFormShow = () => {
             store.dispatch("beforeAction", {

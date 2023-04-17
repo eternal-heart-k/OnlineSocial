@@ -12,6 +12,10 @@ const ModuleUser = {
         accessToken: "",
         refreshToken: "",
         isLogin: false,
+
+        fansListVisible: false,
+        fansList: [],
+        fansListPageIndex: 1,
     },
     getters: {
     },
@@ -35,6 +39,28 @@ const ModuleUser = {
             localStorage.setItem("access_token", token.AccessToken);
             localStorage.setItem("refresh_token", token.RefreshToken);
         },
+        refreshFansList(state, data) {
+            state.fansList = data;
+            state.fansListPageIndex = 2;
+        },
+        addFansList(state, data) {
+            state.fansList = state.fansList.concat(data);
+            state.fansListPageIndex ++ ;
+        },
+        updateFansListVisible(state, status) {
+            state.fansListVisible = status;
+        },
+        updateFansUserFollowStatusByIndex(state, data) {
+            state.fansList[data.Index].IsFollowed = data.Status;
+        },
+        updateFansUserFollowStatusByUserId(state, data) {
+            for (let item of state.fansList) {
+                if (item.UserId == data.UserId) {
+                    item.IsFollowed = data.Status;
+                    break;
+                }
+            }
+        }
     },
     actions: {
         getUserInfoByUserId(context, data) {
@@ -146,7 +172,25 @@ const ModuleUser = {
                     alert(message);
                 }
             });
-        }
+        },
+        getFansList(context, data) {
+            $.ajax({
+                url: context.rootState.urlPre + "/api/user/fans/page",
+                type: "post",
+                headers: {
+                    'Authorization': "Bearer " + context.rootState.user.accessToken,
+                },
+                data: JSON.stringify(data.param),
+                contentType: "application/json",
+                success(resp) {
+                    if (resp.IsSuccess) {
+                        data.success(resp.Result);
+                    } else {
+                        data.error(resp.Message);
+                    }
+                }
+            });
+        },
     },
     modules: {
     }

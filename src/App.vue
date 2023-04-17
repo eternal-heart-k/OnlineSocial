@@ -11,6 +11,7 @@
   </div>
   <PostEdit />
   <ImagePreview />
+  <AddFollowShowGroup />
 </template>
 
 <script>
@@ -19,6 +20,7 @@ import { useStore } from 'vuex';
 import router from '@/router/index';
 import PostEdit from './components/post/PostEdit.vue';
 import ImagePreview from './components/ImagePreview';
+import AddFollowShowGroup from './components/follow/AddFollowShowGroup.vue';
 
 export default {
   name: "App",
@@ -26,6 +28,7 @@ export default {
     HomeHeaderView,
     PostEdit,
     ImagePreview,
+    AddFollowShowGroup,
   },
   mounted() {
     const store = useStore();

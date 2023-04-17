@@ -7,6 +7,9 @@ const ModulePost = {
         hotRangeType: 0,
         hotPostList: [],
         hotPageIndex: 1,
+        hotUserList: [],
+        hotUserTotalCount: 0,
+        followHotUserListIndex: 0,
 
         followPostList: [],
         followPageIndex: 1,
@@ -76,10 +79,19 @@ const ModulePost = {
             state.hotPostList = [];
             state.hotPageIndex = 1;
         },
-
-
-
-
+        updateHotUserList(state, data) {
+            state.hotUserList = data.Items;
+        },
+        refreshHotUserList(state, data) {
+            state.hotUserTotalCount = data.TotalCount;
+            state.hotUserList = data.Items;
+        },
+        updateHotUserFollowStatus(state) {
+            state.hotUserList[state.followHotUserListIndex].IsFollowed = true;
+        },
+        updateFollowHotUserListIndex(state, index) {
+            state.followHotUserListIndex = index;
+        },
 
 
         refreshFollowPostList(state, data) {
@@ -282,6 +294,24 @@ const ModulePost = {
                 success(resp) {
                     if (resp.IsSuccess) {
                         data.success();
+                    } else {
+                        data.error(resp.Message);
+                    }
+                }
+            });
+        },
+        getHotUserList(context, data) {
+            $.ajax({
+                url: context.rootState.urlPre + "/api/user/hot/page",
+                type: "post",
+                headers: {
+                    'Authorization': "Bearer " + context.rootState.user.accessToken,
+                },
+                data: JSON.stringify(data.param),
+                contentType: "application/json",
+                success(resp) {
+                    if (resp.IsSuccess) {
+                        data.success(resp.Result);
                     } else {
                         data.error(resp.Message);
                     }

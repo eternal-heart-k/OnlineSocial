@@ -34,10 +34,9 @@ const ModuleProfile = {
                 success(resp) {
                     if (resp.IsSuccess) {
                         context.commit("updateUpdatePasswordFormShow", false);
-                        alert("修改成功");
                         data.success();
                     } else {
-                        alert(resp.Message);
+                        data.error(resp.Message);
                     }
                 }
             });
