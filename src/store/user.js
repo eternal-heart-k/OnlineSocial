@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import jwt_decode from 'jwt-decode';
+import { ElMessage } from 'element-plus';
 
 const ModuleUser = {
     state: {
@@ -86,7 +87,7 @@ const ModuleUser = {
                 },
                 error(resp) {
                     if (resp.status == '401') {
-                        alert(context.rootState.unAuthorize);
+                        ElMessage.error(context.rootState.unAuthorize);
                     }
                 }
             });
@@ -105,7 +106,7 @@ const ModuleUser = {
                     if (resp.IsSuccess) {
                         context.commit("updateToken", resp.Result);
                     } else {
-                        alert(resp.Message);
+                        ElMessage.error(resp.Message);
                     }
                 }
             });
@@ -169,11 +170,15 @@ const ModuleUser = {
                     context.dispatch("refreshAccessTokenInterval", {First: false});
                 },
                 error(message) {
-                    alert(message);
+                    ElMessage.error(message);
                 }
             });
         },
         getFansList(context, data) {
+            if (!context.rootState.user.isLogin) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
             $.ajax({
                 url: context.rootState.urlPre + "/api/user/fans/page",
                 type: "post",

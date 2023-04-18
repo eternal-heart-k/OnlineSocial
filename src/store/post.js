@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import { ElMessage } from 'element-plus';
 
 const ModulePost = {
     state: {
@@ -189,6 +190,10 @@ const ModulePost = {
             context.commit("updatePostEditShow", data.Status);
         },
         uploadFileList(context, data) {
+            if (!context.rootState.user.isLogin) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
             const formData = new FormData();
             for (let item of data.param) {
                 formData.append('formFiles', item);
@@ -212,6 +217,10 @@ const ModulePost = {
             });
         },
         postAPost(context, data) {
+            if (!context.rootState.user.isLogin) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
             $.ajax({
                 url: context.rootState.urlPre + "/api/post",
                 type: "post",
@@ -230,6 +239,10 @@ const ModulePost = {
             });
         },
         getPostList(context, data) {
+            if (!context.rootState.user.isLogin) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
             $.ajax({
                 url: context.rootState.urlPre + "/api/post/page",
                 type: "post",
@@ -248,6 +261,10 @@ const ModulePost = {
             });
         },
         deleteMyPost(context, data) {
+            if (!context.rootState.user.isLogin) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
             $.ajax({
                 url: context.rootState.urlPre + "/api/post?id=" + data.Id,
                 type: "delete",
@@ -265,6 +282,10 @@ const ModulePost = {
             });
         },
         like(context, data) {
+            if (!context.rootState.user.isLogin) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
             $.ajax({
                 url: context.rootState.urlPre + "/api/post/like",
                 type: "post",
@@ -283,6 +304,10 @@ const ModulePost = {
             });
         },
         cancelLike(context, data) {
+            if (!context.rootState.user.isLogin) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
             $.ajax({
                 url: context.rootState.urlPre + "/api/post/like",
                 type: "delete",
@@ -301,6 +326,10 @@ const ModulePost = {
             });
         },
         getHotUserList(context, data) {
+            if (!context.rootState.user.isLogin) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
             $.ajax({
                 url: context.rootState.urlPre + "/api/user/hot/page",
                 type: "post",

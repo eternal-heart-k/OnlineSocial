@@ -354,6 +354,9 @@ export default {
         const noMore = ref(false);
         let scrollDisabled = computed(() => loading.value || noMore.value);
         const loadMorePost = () => {
+            if (!store.state.user.isLogin) {
+                return ;
+            }
             loading.value = true;
             store.dispatch("getPostList", {
                 param: {

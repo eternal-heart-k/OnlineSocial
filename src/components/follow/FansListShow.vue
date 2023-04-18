@@ -11,7 +11,9 @@
             <div v-infinite-scroll="loadMoreFans" :infinite-scroll-disabled="scrollDisabled">
                 <el-row class="fans-single" v-for="(fansInfo, index) of fansList" :key="index">
                     <el-col :span="3">
-                        <el-avatar class="fans-avatar" :src="fansInfo.AvatarUrl" :size="40"></el-avatar>
+                        <el-tooltip :content="fansInfo.ShowContent" effect="customized" placement="top">
+                            <el-avatar class="fans-avatar" :src="fansInfo.AvatarUrl" :size="40"></el-avatar>
+                        </el-tooltip>
                     </el-col>
                     <el-col :span="15">
                         <el-row>
@@ -64,7 +66,11 @@ export default {
         });
         let fansList = computed({
             get() {
-                return store.state.user.fansList;
+                let list = store.state.user.fansList;
+                for (let i = 0; i < list.length; i ++ ) {
+                    list[i]["ShowContent"] = `关注 ${list[i].FollowCount}\t粉丝 ${list[i].FansCount}`;
+                }
+                return list;
             },
             set() {
             }
@@ -190,5 +196,8 @@ export default {
 }
 .fans-follow-btn {
     width: 100%;
+}
+.fans-avatar {
+    cursor: pointer;
 }
 </style>

@@ -18,7 +18,10 @@ export default {
   },
   beforeCreate() {
     const store = useStore();
-    if (!store.state.user.isLogin) return;
+    if (!store.state.user.isLogin) {
+      ElMessage.error("暂未登录，请先登录");
+      return ;
+    }
     store.dispatch("getUserInfoByUserId", {
         success() {
           store.dispatch("getHotUserList", {

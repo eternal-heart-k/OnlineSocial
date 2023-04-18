@@ -103,7 +103,7 @@ export default {
     };
     const submitForm = () => {
       if (content.value == "" && fileList.value.length == 0) {
-        alert("发布内容不能为空");
+        ElMessage.error("发布内容不能为空");
         return;
       }
       loading.value = true;

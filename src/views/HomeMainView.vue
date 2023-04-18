@@ -43,7 +43,9 @@
                                 :key="index"
                             >
                                 <div class="hot-user-left">
-                                    <el-avatar :size="50" :src="hotUserInfo.AvatarUrl" />
+                                    <el-tooltip :content="hotUserInfo.ShowContent" effect="customized" placement="top">
+                                        <el-avatar style="cursor: pointer;" :size="50" :src="hotUserInfo.AvatarUrl" />
+                                    </el-tooltip>
                                 </div>
                                 <div class="hot-user-main">
                                     <div class="hot-user-username">
@@ -106,6 +108,10 @@ export default {
         const hotPostShowInfoRef = ref(null);
         const changeHotPostRangeType = (type) => {
             store.commit("updateHotRangeType", type);
+            if (!store.state.user.isLogin) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
             hotPostShowInfoRef.value.noMore = false;
             hotPostShowInfoRef.value.loadMorePost();
         };
@@ -121,7 +127,11 @@ export default {
         });
         let hotUserInfos = computed({
             get() {
-                return store.state.post.hotUserList;
+                let list = store.state.post.hotUserList;
+                for (let i = 0; i < list.length; i ++ ) {
+                    list[i]["ShowContent"] = `关注 ${list[i].FollowCount}\t粉丝 ${list[i].FansCount}`;
+                }
+                return list;
             },
             set() {
             }

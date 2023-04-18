@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import { ElMessage } from 'element-plus';
 
 const ModuleFollow = {
     state: {
@@ -65,6 +66,10 @@ const ModuleFollow = {
     },
     actions: {
         getFollowCount(context, data) {
+            if (!context.rootState.user.isLogin) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
             $.ajax({
                 url: context.rootState.urlPre + "/api/follow/count?userId=" + context.rootState.user.userId,
                 type: "get",
@@ -82,6 +87,10 @@ const ModuleFollow = {
             });
         },
         getFollowedCount(context, data) {
+            if (!context.rootState.user.isLogin) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
             $.ajax({
                 url: context.rootState.urlPre + "/api/follow/fans?userId=" + context.rootState.user.userId,
                 type: "get",
@@ -99,6 +108,10 @@ const ModuleFollow = {
             });
         },
         followUser(context, data) {
+            if (!context.rootState.user.isLogin) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
             $.ajax({
                 url: context.rootState.urlPre + "/api/follow",
                 type: "post",
@@ -117,6 +130,10 @@ const ModuleFollow = {
             });
         },
         getFollowGroupList(context, data) {
+            if (!context.rootState.user.isLogin) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
             $.ajax({
                 url: context.rootState.urlPre + "/api/follow/all?userId=" + context.rootState.user.userId,
                 type: "get",
@@ -133,6 +150,10 @@ const ModuleFollow = {
             });
         },
         addFollowGroup(context, data) {
+            if (!context.rootState.user.isLogin) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
             $.ajax({
                 url: context.rootState.urlPre + "/api/follow/group",
                 type: "post",
@@ -151,6 +172,10 @@ const ModuleFollow = {
             });
         },
         moveNewFollowGroup(context, data) {
+            if (!context.rootState.user.isLogin) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
             $.ajax({
                 url: context.rootState.urlPre + `/api/follow/move?followId=${context.state.selectFollowId}&followGroupId=${data.FollowGroupId}`,
                 type: "put",
@@ -167,6 +192,10 @@ const ModuleFollow = {
             });
         },
         deleteFollowGroup(context, data) {
+            if (!context.rootState.user.isLogin) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
             $.ajax({
                 url: context.rootState.urlPre + "/api/follow/group?id=" + data.GroupId,
                 type: "delete",
@@ -183,6 +212,10 @@ const ModuleFollow = {
             });
         },
         cancelFollow(context, data) {
+            if (!context.rootState.user.isLogin) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
             $.ajax({
                 url: context.rootState.urlPre + "/api/follow?id=" + data.Id,
                 type: "put",
@@ -199,6 +232,10 @@ const ModuleFollow = {
             });
         },
         cancelFollowByUserId(context, data) {
+            if (!context.rootState.user.isLogin) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
             $.ajax({
                 url: context.rootState.urlPre + "/api/follow/userid",
                 type: "put",
@@ -210,6 +247,26 @@ const ModuleFollow = {
                 success(resp) {
                     if (resp.IsSuccess) {
                         data.success();
+                    } else {
+                        data.error(resp.Message);
+                    }
+                }
+            });
+        },
+        getCountInfoByUserId(context, data) {
+            if (!context.rootState.user.isLogin) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
+            $.ajax({
+                url: context.rootState.urlPre + "/api/follow/count/info?userId=" + data.UserId,
+                type: "get",
+                headers: {
+                    'Authorization': "Bearer " + context.rootState.user.accessToken,
+                },
+                success(resp) {
+                    if (resp.IsSuccess) {
+                        data.success(resp.Result);
                     } else {
                         data.error(resp.Message);
                     }

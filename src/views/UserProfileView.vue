@@ -27,6 +27,7 @@ import UpdateUserInfoForm from '@/components/UpdateUserInfoForm.vue';
 import { useStore } from 'vuex';
 import FollowGroupShow from '../components/follow/FollowGroupShow.vue';
 import FansListShow from '../components/follow/FansListShow.vue';
+import { ElMessage } from 'element-plus';
 
 export default {
     name: "UserProfileView",
@@ -40,7 +41,10 @@ export default {
     },
     beforeCreate() {
         const store = useStore();
-        if (!store.state.user.isLogin) return;
+        if (!store.state.user.isLogin) {
+            ElMessage.error("暂未登录，请先登录");
+            return ;
+        }
         store.dispatch("getUserInfoByUserId", {
             success() {
                 store.dispatch("getFollowCount", {

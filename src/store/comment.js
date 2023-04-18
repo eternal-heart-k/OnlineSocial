@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import { ElMessage } from 'element-plus';
 
 const ModuleComment = {
     state: {
@@ -56,6 +57,10 @@ const ModuleComment = {
     },
     actions: {
         commentPost(context, data) {
+            if (!context.rootState.user.isLogin) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
             $.ajax({
                 url: context.rootState.urlPre + "/api/post/comment",
                 type: "post",
@@ -74,6 +79,10 @@ const ModuleComment = {
             });
         },
         uploadSingleImage(context, data) {
+            if (!context.rootState.user.isLogin) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
             const formData = new FormData();
             formData.append('formFile', data.File);
             $.ajax({
@@ -95,6 +104,10 @@ const ModuleComment = {
             });
         },
         getPostCommentByPostId(context, data) {
+            if (!context.rootState.user.isLogin) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
             $.ajax({
                 url: context.rootState.urlPre + "/api/post/comment/page",
                 type: "post",
@@ -113,6 +126,10 @@ const ModuleComment = {
             });
         },
         commentComment(context, data) {
+            if (!context.rootState.user.isLogin) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
             $.ajax({
                 url: context.rootState.urlPre + "/api/post/comment",
                 type: "post",
@@ -131,6 +148,10 @@ const ModuleComment = {
             });
         },
         getSubCommentByCommentId(context, data) {
+            if (!context.rootState.user.isLogin) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
             $.ajax({
                 url: context.rootState.urlPre + "/api/post/sub/comment/page",
                 type: "post",
@@ -149,6 +170,10 @@ const ModuleComment = {
             });
         },
         deleteComment(context, data) {
+            if (!context.rootState.user.isLogin) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
             $.ajax({
                 url: context.rootState.urlPre + "/api/post/comment?id=" + data.Id,
                 type: "delete",

@@ -3,8 +3,10 @@
         <div class="my-post-list-card" v-for="(post, postIndex) in postList" :key="postIndex">
             <el-card>
                 <el-header class="flex-box post-top">
-                    <div class="post-top-avatar">
-                        <el-avatar :size="50" :src="post.AvatarUrl" />
+                    <div class="post-top-avatar" @mouseenter="getShowContentValue(post.UserId)" @mouseleave="tooltipStatus = false">
+                        <el-tooltip :content="hotPostUserContentValue" effect="customized" placement="top" v-model="tooltipStatus">
+                            <el-avatar style="cursor: pointer;" :size="50" :src="post.AvatarUrl" />
+                        </el-tooltip>
                     </div>
                     <div class="post-top-main">
                         <div class="tenpx-l-r align-center post-top-username btn hover-orign">
@@ -179,8 +181,8 @@
             </el-card>
         </div>
     </div>
-    <p class="load-text" v-if="loading">Loading...</p>
-    <p class="load-text" v-if="noMore">没有更多内容了~</p>
+    <p class="load-text load-text-margin-top-more" v-if="loading">Loading...</p>
+    <p class="load-text load-text-margin-top-more" v-if="noMore">没有更多内容了~</p>
     <CommentReplyForm 
         :userName="commentReplyUserName"
         :commentId="commentReplyId"
@@ -361,6 +363,9 @@ export default {
             }
         });
         const loadMorePost = () => {
+            if (!store.state.user.isLogin) {
+                return ;
+            }
             loading.value = true;
             store.dispatch("getPostList", {
                 param: {
@@ -628,6 +633,21 @@ export default {
                 }
             });
         };
+        let tooltipStatus = ref(false);
+        let hotPostUserContentValue = ref("");
+        const getShowContentValue = (userId) => {
+            store.dispatch("getCountInfoByUserId", {
+                UserId: userId,
+                success(result) {
+                    hotPostUserContentValue.value = result;
+                    tooltipStatus.value = true;
+                },
+                error(message) {
+                    hotPostUserContentValue.value = message;
+                    tooltipStatus.value = true;
+                }
+            });
+        };
         return {
             postList,
             avatarUrl,
@@ -644,6 +664,8 @@ export default {
             commentReplyPostIndex,
             commentReplyPostCommentIndex,
             subCommentInfoList,
+            tooltipStatus,
+            hotPostUserContentValue,
             loadMorePost,
             showImagePre,
             closeImagePre,
@@ -664,6 +686,7 @@ export default {
             postCommentOrderTypeChanged,
             loadMoreComment,
             subCommentShow,
+            getShowContentValue,
         }
     },
 }
@@ -881,5 +904,8 @@ export default {
 }
 .comment-order-type span {
     margin-right: 30px;
+}
+.load-text-margin-top-more {
+    margin-top: 30px;
 }
 </style>

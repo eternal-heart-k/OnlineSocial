@@ -29,7 +29,12 @@
                                 :key="followIndex"
                             >
                                 <div class="follow-group-follow-userinfo flex">
-                                    <el-avatar class="follow-group-follow-avatar" :size="35" :src="followInfo.AvatarUrl" />
+                                    <div @mouseenter="getShowContentValue(followInfo.ToUserId)" @mouseleave="tooltipStatus = false">
+                                        <el-tooltip :content="hotPostUserContentValue" effect="customized" placement="top" v-model="tooltipStatus">
+                                            <el-avatar class="follow-group-follow-avatar" :size="35" :src="followInfo.AvatarUrl" />
+                                        </el-tooltip>
+                                    </div>
+                                    
                                     <div class="follow-group-follow-username">{{ followInfo.UserName }}</div>
                                 </div>
                                 <div class="follow-group-follow-options flex">
@@ -179,10 +184,28 @@ export default {
         const deleteFollowGroup = () => {
             store.commit("updateDeleteFollowGroupVisible", true);
         };
+        let tooltipStatus = ref(false);
+        let hotPostUserContentValue = ref("");
+        const getShowContentValue = (userId) => {
+            store.dispatch("getCountInfoByUserId", {
+                UserId: userId,
+                success(result) {
+                    hotPostUserContentValue.value = result;
+                    tooltipStatus.value = true;
+                },
+                error(message) {
+                    hotPostUserContentValue.value = message;
+                    tooltipStatus.value = true;
+                }
+            });
+        };
         return {
             visible,
             followGroupList,
             activeNames,
+            tooltipStatus,
+            hotPostUserContentValue,
+            getShowContentValue,
             handleClose,
             changeFollowInfoStatus,
             cancelFollow,

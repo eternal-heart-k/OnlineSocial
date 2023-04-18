@@ -58,7 +58,7 @@ import { Message, Edit, Promotion } from "@element-plus/icons";
 import { ref, computed } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from "vue-router";
-import { ElMessageBox } from 'element-plus';
+import { ElMessageBox, ElMessage } from 'element-plus';
 import $ from 'jquery';
 
 export default {
@@ -84,6 +84,10 @@ export default {
       router.push({name: 'message'});
     };
     const ShowEditPost = () => {
+      if (!store.state.user.isLogin) {
+          ElMessage.error("暂未登录，请先登录");
+          return;
+      }
       store.dispatch("updatePostEditShow", {
         Status: true
       });

@@ -104,17 +104,13 @@ export default {
             set() {}
         });
         const followUserInfoShow = () => {
-            store.dispatch("beforeAction", {
-                func() {
+            store.dispatch("getFollowGroupList", {
+                success(result) {
+                    store.commit("refreshFollowGroupList", result);
                     store.commit("updateFollowGroupVisible", true);
-                    store.dispatch("getFollowGroupList", {
-                        success(result) {
-                            store.commit("refreshFollowGroupList", result);
-                        },
-                        error(message) {
-                            ElMessage.error(message);
-                        }
-                    });
+                },
+                error(message) {
+                    ElMessage.error(message);
                 }
             });
         };
@@ -134,21 +130,21 @@ export default {
             });
         };
         const updateUserInfoFormShow = () => {
-            store.dispatch("beforeAction", {
-                func() {
-                    store.dispatch("updateUpdateUserInfoFormShow", {
-                        Status: true
-                    });
-                }
+            if (!isLogin.value) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
+            store.dispatch("updateUpdateUserInfoFormShow", {
+                Status: true
             });            
         };
         const updatePasswordFormShow = () => {
-            store.dispatch("beforeAction", {
-                func() {
-                    store.dispatch("updateUpdatePasswordFormShow", {
-                        Status: true
-                    });
-                }
+            if (!isLogin.value) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
+            store.dispatch("updateUpdatePasswordFormShow", {
+                Status: true
             });
         };
         const updateAvatar = (ops) => {

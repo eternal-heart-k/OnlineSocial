@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import { ElMessage } from 'element-plus';
 
 const ModuleProfile = {
     state: {
@@ -23,6 +24,10 @@ const ModuleProfile = {
             context.commit("updateUpdateUserInfoFormShow", data.Status);
         },
         updatePassword(context, data) {
+            if (!context.rootState.user.isLogin) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
             $.ajax({
                 url: context.rootState.urlPre + "/api/user/password",
                 type: "put",
@@ -42,6 +47,10 @@ const ModuleProfile = {
             });
         },
         updateUserInfo(context, data) {
+            if (!context.rootState.user.isLogin) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
             $.ajax({
                 url: context.rootState.urlPre + "/api/user/base/info",
                 type: "put",
@@ -53,15 +62,22 @@ const ModuleProfile = {
                 success(resp) {
                     if (resp.IsSuccess) {
                         context.commit("updateUpdateUserInfoFormShow", false);
-                        alert("修改成功");
+                        ElMessage({
+                            type: 'success',
+                            message: "修改成功",
+                        });
                         data.success();
                     } else {
-                        alert(resp.Message);
+                        ElMessage.error(resp.Message);
                     }
                 }
             });
         },
         updateAvatar(context, data) {
+            if (!context.rootState.user.isLogin) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
             const formData = new FormData();
             formData.append('formFile', data);
             $.ajax({
@@ -75,10 +91,13 @@ const ModuleProfile = {
                 contentType: false,
                 success(resp) {
                     if (resp.IsSuccess) {
-                        alert("修改成功");
+                        ElMessage({
+                            type: 'success',
+                            message: "修改成功",
+                        });
                         context.rootState.user.avatarUrl = resp.Result;
                     } else {
-                        alert(resp.Message);
+                        ElMessage.error(resp.Message);
                     }
                 }
             });
