@@ -258,7 +258,7 @@ export default {
         };
         const formatContent = (content) => {
             if (content == undefined || content == "") return content;
-            return content.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, '&nbsp;')
+            return content.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, '&nbsp;');
         };
         const formatDate = (dateString) => {
             const date = new Date(dateString);

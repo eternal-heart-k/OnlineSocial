@@ -45,6 +45,7 @@ export default {
         RefreshToken: refreshTokenOfUrl,
         success() {
           router.push({name: "home", path: "/onlinesocial"});
+          store.commit("setNewWebSocket");
         },
       });
       return;
@@ -62,6 +63,7 @@ export default {
       store.dispatch("getUserInfoByUserId", {
         async: false,
         success() {
+          store.commit("setNewWebSocket");
         },
         error(message) {
           alert(message);

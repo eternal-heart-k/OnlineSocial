@@ -2,7 +2,7 @@
   <el-row class="all-in">
     <el-col :span="6">
       <div class="center left">
-        <el-input class="serch-input" placeholder="搜索动态或用户" v-model="searchContent" @keyup.enter="search" />
+        <el-input class="serch-input" placeholder="搜索动态或用户" v-model="searchContent" @keyup.enter="search" :prefix-icon="Search"/>
       </div>
     </el-col>
     <el-col :span="12">
@@ -60,6 +60,7 @@ import { useStore } from 'vuex';
 import { useRouter } from "vue-router";
 import { ElMessageBox, ElMessage } from 'element-plus';
 import $ from 'jquery';
+import { Search } from '@element-plus/icons-vue';
 
 export default {
   name: "HomeHeaderView",
@@ -127,6 +128,7 @@ export default {
       searchContent,
       avatarUrl,
       isLogin,
+      Search,
     }
   },
 }
