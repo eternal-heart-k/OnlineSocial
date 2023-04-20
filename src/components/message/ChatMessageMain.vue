@@ -36,7 +36,7 @@ export default {
     height: 100%;
 }
 .chat-page-module {
-    height: 500px;
+    height: 600px;
 }
 </style>
   

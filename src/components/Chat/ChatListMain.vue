@@ -2,7 +2,7 @@
     <div class="chat-box">
         <div class="chat-box-top">{{ chatUserName }}</div>
         <el-divider class="chat-box-top-divider" />
-        <div class="chat-box-main">
+        <el-scrollbar class="chat-box-main" ref="chatScrollRef">
             <div 
                 class="chat-message-single" 
                 v-for="(chatMessage, index) of chatMessageList" :key="index"
@@ -24,24 +24,41 @@
                     <el-avatar class="chat-message-avatar" :size="35" :src="myAvatarUrl"></el-avatar>
                 </div>
             </div>
-        </div>
+        </el-scrollbar>
     </div>
     <el-divider class="chat-box-input-divider" />
     <div class="chat-input">
-        <el-input placeholder="请输入消息内容" v-model="newMessageText" type="textarea" :rows="5" resize="none" />
-        <el-button class="chat-input-btn" type="primary" @click="sendMessage">发送</el-button>
+        <textarea 
+            class="chat-textarea" 
+            v-model="newMessageText" 
+            @keydown.shift.enter.exact.prevent="addNewLine"
+            @keydown.enter.exact.prevent="sendMessage"
+            @focus="chatInputFocusChange(true)"
+            @blur="chatInputFocusChange(false)"
+        >
+        </textarea>
     </div>
+    <p class="chat-footer">
+        按下Enter发送内容/ Shift+Enter换行
+    </p>
 </template>
 
 <script>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useStore } from 'vuex';
 import { ElMessage } from 'element-plus';
 
 export default {
     name: 'ChatListMain',
+    mounted() {
+        let scrollRef = this.$refs.chatScrollRef;
+        setTimeout(() => {
+            scrollRef.setScrollTop(1000000000);
+        }, 100);
+    },
     setup() {
         const store = useStore();
+        let chatScrollRef = ref(null);
         let chatMessageList = computed({
             get() {
                 return store.state.message.chatMessageList;
@@ -89,32 +106,32 @@ export default {
 
             }
         });
-        socket.value.onmessage = function(data) {
-            let message = JSON.parse(data.data);
-            if (message.ReceiveUserId == myUserId.value && message.Type == 2) {
-                if (message.SendUserId == chatUserId.value) {
-                    store.commit("addChatMessageToList", {
-                        SendUserId: message.SendUserId,
-                        ReceiveUserId: message.ReceiveUserId,
-                        HasRead: true,
-                        Content: message.Content,
-                        CreationTime: message.CreationTime
-                    });
-                } else {
-                    ElMessage.success("待确定用户，未读");
-                }
-            }
+        const getGuid = () => {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+                return v.toString(16);
+            });
+        };
+        const chatScrollToTop = () => {
+            setTimeout(() => {
+                chatScrollRef.value.setScrollTop(1000000000);
+            }, 100);
         };
         const sendMessage = () => {
             if (newMessageText.value.trim() !== "") {
+                let newGuid = getGuid();
+                while (store.state.message.messageUIdSet.has(newGuid)) {
+                    newGuid = getGuid();
+                }
+                store.commit("addMessageUIdSet", newGuid);
                 let message = {
+                    UId: newGuid,
                     Type: 2, 
-                    SendUserId: myUserId, 
-                    SendUserAvatar: store.state.user.avatarUrl,
+                    SendUserId: myUserId.value, 
+                    SendUserAvatarUrl: store.state.user.avatarUrl,
                     SendUserName: store.state.user.userName,
                     ReceiveUserId: chatUserId.value, 
-                    Content: newMessageText.value,
-                    CreationTime: new Date()
+                    Content: newMessageText.value
                 };
                 if (socket.value.readyState === 1) {
                     socket.value.send(JSON.stringify(message));
@@ -123,11 +140,29 @@ export default {
                         ReceiveUserId: message.ReceiveUserId,
                         HasRead: false,
                         Content: message.Content,
-                        CreationTime: message.CreationTime
+                        CreationTime: new Date()
                     });
                     newMessageText.value = '';
+                    chatScrollToTop();
+                    store.dispatch("updateUserChatReadStatus", {
+                        param: {
+                            SendUserId: message.ReceiveUserId,
+                            ReceiveUserId: message.SendUserId,
+                        },
+                        success() {
+                            store.commit("clearChatUserNotReadCount", chatUserId.value);
+                        },
+                        error(message) {
+                            ElMessage.error(message);
+                        }
+                    });
+                    store.commit("sendMessageUpdateChatUserContent", {
+                        UserId: message.ReceiveUserId,
+                        CreationTime: new Date(),
+                        Content: message.Content,
+                    });
                 } else {
-                    ElMessage.error("socket未连接");
+                    ElMessage.error("socket未连接，请刷新后再次尝试");
                 }
             }
         };
@@ -144,16 +179,49 @@ export default {
             if (content == undefined || content == "") return content;
             return content.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, '&nbsp;');
         };
+        const addNewLine = (e) => {
+            const start = e.target.selectionStart;
+            const end = e.target.selectionEnd;
+            const value = e.target.value;
+            e.target.value = value.substring(0, start) + "\n" + value.substring(end);
+            e.target.selectionStart = e.target.selectionEnd = start + 1;
+        };
+        watch(chatMessageList, () => {
+            chatScrollToTop();
+        });
+        let chatInputFocus = ref(false);
+        const chatInputFocusChange = (status) => {
+            if (status && !chatInputFocus.value) {
+                store.dispatch("updateUserChatReadStatus", {
+                    param: {
+                        SendUserId: chatUserId.value,
+                        ReceiveUserId: myUserId.value,
+                    },
+                    success() {
+                        store.commit("clearChatUserNotReadCount", chatUserId.value);
+                    },
+                    error(message) {
+                        ElMessage.error(message);
+                    }
+                });
+            }
+            chatInputFocus.value = status;
+        };
         return {
+            chatScrollRef,
             myUserId,
             myAvatarUrl,
             chatMessageList,
             newMessageText,
             chatUserName,
             chatUserAvatarUrl,
+            chatInputFocus,
             sendMessage,
             chatTimeFormat,
             chatContentFormat,
+            addNewLine,
+            chatScrollToTop,
+            chatInputFocusChange,
         }
     }
 };
@@ -163,14 +231,18 @@ export default {
 .chat-message-content .el-card__body {
     padding: 5px;
 }
+.chat-input .el-scrollbar__view {
+    height: 100%;
+}
 </style>
 
 <style scoped>
 .chat-box {
-    height: 65%;
+    height: 78%;
 }
 .chat-box-main {
-    height:100%;
+    overflow: auto;
+    height: 390px;
 }
 .chat-message-single {
     margin: 5px 0;
@@ -194,6 +266,7 @@ export default {
     display: flex;
     justify-content: flex-end;
     align-items: center;
+    margin-right: 20px;
 }
 .chat-message-right-left {
     display: flex;
@@ -216,11 +289,30 @@ export default {
     font-size: 12px;
 }
 .chat-input {
-    height: 30%;
+    height: 21%;
+}
+.chat-textarea {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    resize: none;
+    border: none;
+    outline: none;
+    font-size: 15px;
+    line-height: 22px;
+    padding: 10px 10px 0 0;
+    margin: 0;
+    background-color: transparent;
 }
 .chat-input-btn {
     margin-top: 10px;
     float: right;
+}
+.chat-footer {
+    font-size: 12px;
+    margin-right: 18px;
+    text-align: right;
+    color: #a3a7ae;
 }
 </style>
   

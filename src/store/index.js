@@ -40,6 +40,48 @@ export default createStore({
       }
       data.func();
     },
+    setWebSocket(context) {
+      context.commit("setNewWebSocket");
+      context.rootState.socket.onmessage = function(data) {
+        let message = JSON.parse(data.data);
+        if (message.ReceiveUserId == context.rootState.user.userId) { // 是给自己的
+          if (context.rootState.message.getMessageUIdSet.has(message.UId)) {
+            return ;
+          }
+          context.commit("addGetMessageUIdSet", message.UId);
+          if (message.Type == 2 || message.Type == "Chat") { // 聊天
+            console.log("chat");
+            if (message.SendUserId == context.rootState.message.currentChatUserId) { // 刚好是当前聊天对象发的
+              console.log("currentchatuser");
+              // 聊天框加入消息
+              context.commit("addChatMessageList", {
+                SendUserId: message.SendUserId,
+                ReceiveUserId: message.ReceiveUserId,
+                HasRead: false,
+                Content: message.Content,
+                CreationTime: message.CreationTime
+              });
+              // 未读消息++
+              context.commit("addNotReadCountFromChatUserList", {
+                UserId: message.SendUserId,
+                CreationTime: message.CreationTime,
+                Content: message.Content
+              });
+            } else {
+              console.log("other");
+              context.commit("addNewMessageButNotCurrentChatUser", {
+                UserId: message.SendUserId,
+                UserName: message.SendUserName,
+                AvatarUrl: message.SendUserAvatarUrl,
+                HasRead: false,
+                Content: message.Content,
+                CreationTime: message.CreationTime
+              });
+            }
+          }
+        }
+      };
+    }
   },
   modules: {
     user: ModuleUser,

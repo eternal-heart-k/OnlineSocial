@@ -112,6 +112,20 @@ export default {
         };
         const chatUserSelectClick = (chatUser) => {
             currentSelectChatUserId.value = chatUser.UserId;
+            if (chatUser.NotReadCount > 0) {
+                store.dispatch("updateUserChatReadStatus", {
+                    param: {
+                        SendUserId: chatUser.UserId,
+                        ReceiveUserId: store.state.user.userId
+                    },
+                    success() {
+                        chatUser.NotReadCount = 0;
+                    },
+                    error(message) {
+                        ElMessage.error(message);
+                    }
+                });
+            }
             store.dispatch("getChatMessageListByUserId", {
                 param: {
                     SendUserId: chatUser.UserId,
@@ -198,10 +212,10 @@ export default {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    width: 80%;
 }
 .chat-user-time {
     font-size: 12px;
-    margin-left: 10px;
 }
 .chat-user-content {
     overflow: hidden;

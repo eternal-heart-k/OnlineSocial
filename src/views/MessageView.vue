@@ -24,7 +24,7 @@
                 </el-card>
             </el-col>
             <el-col :span="15">
-                <el-card shadow="always" :body-style="{ padding: '20px' }">
+                <el-card shadow="always" :body-style="{ padding: '20px 0 20px 20px' }">
                     <ChatMessageMain v-if="selectType == 0" />
                     <CommentMessageMain v-if="selectType == 1" />
                     <LikeMessageMain v-if="selectType == 2" />
@@ -58,7 +58,6 @@ export default {
         const store = useStore();
         store.dispatch("getChatUserList", {
             success(result) {
-                console.log(result);
                 store.commit("refreshChatUserList", result);
             },
             error(message) {
