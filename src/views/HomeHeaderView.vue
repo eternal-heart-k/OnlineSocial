@@ -14,7 +14,7 @@
         </div>
         <div class="box center">
           <router-link :to="{name: 'hot' }">
-            <el-link class="no-select btn" type="primary" :underline="false" target="_blank" :style="{ 'font-size': '17px' }">热门</el-link>
+            <el-link class="no-select btn" type="primary" :underline="false" target="_blank" :style="{ 'font-size': '17px' }" @click="goToHotPage">热门</el-link>
           </router-link>
         </div>
         <div class="box center">
@@ -23,7 +23,9 @@
           </router-link>
         </div>
         <div class="box center">
-          <el-icon class="btn" :size="25" @click="messageShow"><Message /></el-icon>
+          <router-link :to="{name: 'message' }">
+            <el-icon class="btn" :size="27" color="black" @click="goToMessagePage"><Message /></el-icon>
+          </router-link>
         </div>
         <div class="box center">
           <router-link :to="{name: 'userProfile' }">
@@ -57,7 +59,6 @@
 import { Message, Edit, Promotion } from "@element-plus/icons";
 import { ref, computed } from 'vue';
 import { useStore } from 'vuex';
-import { useRouter } from "vue-router";
 import { ElMessageBox, ElMessage } from 'element-plus';
 import $ from 'jquery';
 import { Search } from '@element-plus/icons-vue';
@@ -71,7 +72,6 @@ export default {
   },
   setup() {
     const store = useStore();
-    const router = useRouter();
     let searchContent = ref('');
     let avatarUrl = computed(() => store.state.user.avatarUrl);
     let isLogin = computed(() => store.state.user.isLogin);
@@ -80,9 +80,6 @@ export default {
         return;
       }
       alert(searchContent.value);
-    };
-    const messageShow = () => {
-      router.push({name: 'message'});
     };
     const ShowEditPost = () => {
       if (!store.state.user.isLogin) {
@@ -118,13 +115,45 @@ export default {
     const loginShow = () => {
       $(".login_module").show();
     };
+    const goToHotPage = () => {
+      store.dispatch("getPostList", {
+        param: {
+          MyUserId: store.state.user.userId,
+          PageIndex: 1,
+          PostOrderType: 0,
+          CommentOrderType: 0,
+          RangeType: store.state.post.hotRangeType,
+          IsRead: true
+        },
+        success(result) {
+          store.commit("refreshHotPostList", result.Items);
+        },
+        error(message) {
+          ElMessage.error(message);
+        }
+      });
+    };
+    const goToMessagePage = () => {
+
+      if (store.state.message.selectType == 0) { // 聊天类型
+        store.dispatch("getChatUserList", {
+          success(result) {
+              store.commit("refreshChatUserList", result);
+          },
+          error(message) {
+              ElMessage.error(message);
+          }
+        });
+      }
+    };
     return {
       search,
-      messageShow,
       ShowEditPost,
       ShowEditFeedback,
       LogOut,
       loginShow,
+      goToHotPage,
+      goToMessagePage,
       searchContent,
       avatarUrl,
       isLogin,

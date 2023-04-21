@@ -9,16 +9,24 @@
                     </div>
                     <div class="message-select-options width-all">
                         <div class="message-select-single">
-                            <el-button class="message-select-btn width-all" :class="{btn_selected_color: selectType == 0}" round @click="updateSelectType(0)">私信</el-button>
+                            <el-button class="message-select-btn width-all" :class="{btn_selected_color: selectType == 0}" round @click="updateSelectType(0)">
+                                私信<el-badge :is-dot="chatRedDot" class="message-select-red-dot" />
+                            </el-button>
                         </div>
                         <div class="message-select-single">
-                            <el-button class="message-select-btn width-all" :class="{btn_selected_color: selectType == 1}" round @click="updateSelectType(1)">评论</el-button>
+                            <el-button class="message-select-btn width-all" :class="{btn_selected_color: selectType == 1}" round @click="updateSelectType(1)">
+                                评论<el-badge is-dot class="message-select-red-dot" />
+                            </el-button>
                         </div>
                         <div class="message-select-single">
-                            <el-button class="message-select-btn width-all" :class="{btn_selected_color: selectType == 2}" round @click="updateSelectType(2)">点赞</el-button>
+                            <el-button class="message-select-btn width-all" :class="{btn_selected_color: selectType == 2}" round @click="updateSelectType(2)">
+                                点赞<el-badge is-dot class="message-select-red-dot" />
+                            </el-button>
                         </div>
                         <div class="message-select-single">
-                            <el-button class="message-select-btn width-all" :class="{btn_selected_color: selectType == 3}" round @click="updateSelectType(3)">通知</el-button>
+                            <el-button class="message-select-btn width-all" :class="{btn_selected_color: selectType == 3}" round @click="updateSelectType(3)">
+                                其他<el-badge is-dot class="message-select-red-dot" />
+                            </el-button>
                         </div>
                     </div>
                 </el-card>
@@ -75,8 +83,21 @@ export default {
         const updateSelectType = (type) => {
             store.commit("updateMessageSelectType", type);
         };
+        let chatRedDot = computed({
+            get() {
+                for (let item of store.state.message.chatUserList) {
+                    if (item.NotReadCount > 0) {
+                        return true;
+                    }
+                }
+                return false;
+            },
+            set() {
+            }
+        });
         return {
             selectType,
+            chatRedDot,
             updateSelectType,
         }
     }
@@ -103,6 +124,10 @@ export default {
 }
 .message-select-single {
     padding: 10px 0;
-    height: 40px;
+}
+.message-select-red-dot {
+    display: inline-flex;
+    position: fixed;
+    left: 17.3%;
 }
 </style>

@@ -71,7 +71,13 @@ export default {
     name: "ChatUserMain",
     setup() {
         const store = useStore();
-        let currentSelectChatUserId = ref("");
+        let currentSelectChatUserId = computed({
+            get() {
+                return store.state.message.currentChatUserId;
+            },
+            set() {
+            }
+        });
         let avatarUrl = computed({
             get() {
                 return store.state.user.avatarUrl;

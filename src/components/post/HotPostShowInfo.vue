@@ -10,20 +10,32 @@
                     </div>
                     <div class="post-top-main">
                         <div class="tenpx-l-r align-center post-top-username btn hover-orign">
-                            {{ userName }}
+                            {{ post.UserName }}
                         </div>
                         <div class="tenpx-l-r align-center post-top-time hover-orign text-noselect">
                             {{ formatDate(post.CreationTime) }} 
                         </div>
                     </div>
-                    <div class="post-top-readcount">
-                        <div class="post-top-readcount-number">{{ formatReadCount(post.ReadCount) }}</div>
-                        <div class="post-top-readcount-text">浏览量</div>
-                    </div>
-                    <div v-if="post.CanDelete" class="post-top-options">
-                        <el-icon class="btn" :size="20" @click="deleteMyPost(postIndex, post.Id)">
-                            <Delete />
-                        </el-icon>
+                    <div class="post-top-right-top">
+                        <div class="post-top-readcount">
+                            <div class="post-top-readcount-number">{{ formatReadCount(post.ReadCount) }}</div>
+                            <div class="post-top-readcount-text">浏览量</div>
+                        </div>
+                        <div class="post-top-options">
+                            <el-icon class="post-top-options-icon btn" @click="updatePostTopOptionsStatus(postIndex)">
+                                <CaretBottom />
+                            </el-icon>
+                        </div>
+                        <el-card 
+                            class="post-top-options-show" 
+                            v-if="post.PostTopOptionsVisible" 
+                            body-style="padding: 0px; display: flex; flex-direction: column;"
+                        >
+                            <div v-if="post.UserId != myUserId && post.IsFollowed" class="post-top-options-btn btn" @click="cancelFollowUserByUserId(post.UserId, postIndex)">取关</div>
+                            <div v-if="post.UserId != myUserId && !post.IsFollowed" class="post-top-options-btn btn" @click="followUserByUserId(post.UserId)">关注</div>
+                            <div v-if="post.UserId != myUserId" class="post-top-options-btn btn" @click="chatWithPostUser(post.UserId, post.UserName, post.AvatarUrl)">私信</div>
+                            <div v-if="post.CanDelete" class="post-top-options-btn btn" @click="deleteMyPost(postIndex, post.Id)">删帖</div>
+                        </el-card>
                     </div>
                 </el-header>
                 <el-main class="post-main">
@@ -198,10 +210,11 @@
 <script>
 import { useStore } from 'vuex';
 import { ref, computed } from 'vue';
-import { Delete, Picture } from "@element-plus/icons";
+import { Delete, Picture, CaretBottom } from "@element-plus/icons";
 import { ElMessage, ElMessageBox } from 'element-plus';
 import CommentReplyForm from './CommentReplyForm.vue';
 import SubCommentInfo from './SubCommentInfo.vue';
+import router from '../../router';
 
 export default {
     name: "PostShowInfo",
@@ -210,6 +223,7 @@ export default {
         Picture,
         CommentReplyForm,
         SubCommentInfo,
+        CaretBottom,
     },
     setup() {
         const store = useStore();
@@ -225,6 +239,7 @@ export default {
                     list[i]["CommentOrderType"] = 0;
                     list[i]["NoMore"] = false;
                     list[i]["PostCommentLoading"] = false;
+                    list[i]["PostTopOptionsVisible"] = false;
                     if (list[i].Content.length > contentCountLimit.value) {
                         list[i]["OverFlow"] = true;
                         list[i]["IsCollapsed"] = true;
@@ -648,6 +663,79 @@ export default {
                 }
             });
         };
+        const updatePostTopOptionsStatus = (index) => {
+            store.commit("updateHotPostTopOptionsStatus", index);
+        };
+        let myUserId = ref(store.state.user.userId);
+        const cancelFollowUserByUserId = (userId) => {
+            ElMessageBox.confirm('确定不关注此人？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                center: true,
+                type: "warning",
+                customStyle: {
+                    width: '300px'
+                }
+            }).then(() => {
+                // 点击确定按钮后执行的操作
+                store.dispatch("cancelFollowByUserId", {
+                    param: {
+                        FromUserId: store.state.user.userId,
+                        ToUserId: userId
+                    },
+                    success() {
+                        store.commit("updateHotPostUserFollowStatus", {
+                            Status: false,
+                            UserId: userId
+                        });
+                        store.commit("updateFollowCountWithCancel");
+                    },
+                    error(message) {
+                        ElMessage.error(message);
+                    }
+                })
+            }).catch(() => {
+                // 点击取消按钮后执行的操作
+            });
+        };
+        const followUserByUserId = (userId) => {
+            store.dispatch("getFollowGroupList", {
+                success(result) {
+                    store.commit("refreshFollowGroupList", result);
+                    store.commit("updateAddFollowPageType", 0);
+                    store.commit("updateAddFollowShowGroupVisible", {
+                        Status: true,
+                        UserId: userId
+                    });
+                },
+                error(message) {
+                    ElMessage.error(message);
+                }
+            });
+        };
+        const chatWithPostUser = (userId, userName, avatarUrl) => {
+            router.push({name: 'message'});
+            setTimeout(() => {
+                store.commit("toChatPageFromPost", {
+                    UserId: userId,
+                    UserName: userName,
+                    AvatarUrl: avatarUrl,
+                    CreationTime: new Date()
+                });
+                store.dispatch("getChatMessageListByUserId", {
+                    param: {
+                        SendUserId: userId,
+                        ReceiveUserId: store.state.user.userId,
+                    },
+                    success(result) {
+                        store.commit("refreshChatMessageList", result);
+                    },
+                    error(message) {
+                        ElMessage.error(message);
+                    }
+                });
+            }, 200);
+        };
         return {
             postList,
             avatarUrl,
@@ -666,6 +754,7 @@ export default {
             subCommentInfoList,
             tooltipStatus,
             hotPostUserContentValue,
+            myUserId,
             loadMorePost,
             showImagePre,
             closeImagePre,
@@ -687,6 +776,10 @@ export default {
             loadMoreComment,
             subCommentShow,
             getShowContentValue,
+            updatePostTopOptionsStatus,
+            cancelFollowUserByUserId,
+            followUserByUserId,
+            chatWithPostUser,
         }
     },
 }
@@ -772,7 +865,7 @@ export default {
     margin-top: 5px;
 }
 .post-top-readcount-number {
-    font-size: 14px;
+    font-size: 13px;
     line-height: 14px;
     text-align: center;
     color: #939393;
@@ -796,9 +889,17 @@ export default {
 .post-footer-like {
     margin-left: 5px;
 }
+.post-top-right-top {
+    display: flex;
+    margin-top: -10px;
+    margin-left: 20px;
+}
 .post-top-options {
-    flex: 1;
-    text-align: right;
+    margin-top: -5px;
+}
+.post-top-options-icon {
+    width: 22px;
+    height: 22px;
 }
 .post-text {
     word-wrap: break-word;
@@ -907,5 +1008,20 @@ export default {
 }
 .load-text-margin-top-more {
     margin-top: 30px;
+}
+.post-top-options-show {
+    position: absolute;
+    margin-top: 20px;
+    width: 100px;
+    margin-left: -45px;
+}
+.post-top-options-btn {
+    width: 100%;
+    text-align: center;
+    padding: 5px;
+    cursor: pointer;
+}
+.post-top-options-btn:hover {
+    background-color: #ECF5FF;
 }
 </style>

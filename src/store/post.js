@@ -93,6 +93,31 @@ const ModulePost = {
         updateFollowHotUserListIndex(state, index) {
             state.followHotUserListIndex = index;
         },
+        cancelFollowHotUser(state, index) {
+            state.hotUserList[index].IsFollowed = false;
+        },
+        updateHotPostTopOptionsStatus(state, index) {
+            for (let i = 0; i < state.hotPostList.length; i ++ ) {
+                if (i == index) {
+                    state.hotPostList[i].PostTopOptionsVisible = !state.hotPostList[i].PostTopOptionsVisible;
+                } else {
+                    state.hotPostList[i].PostTopOptionsVisible = false;
+                }
+            }
+        },
+        updateHotPostUserFollowStatus(state, data) {
+            for (let item of state.hotPostList) {
+                if (item.UserId == data.UserId) {
+                    item.IsFollowed = data.Status;
+                }
+            }
+            for (let item of state.hotUserList) {
+                if (item.UserId == data.UserId) {
+                    item.IsFollowed = data.Status;
+                }
+            }
+        },
+
 
 
         refreshFollowPostList(state, data) {

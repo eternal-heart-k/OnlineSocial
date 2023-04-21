@@ -48,7 +48,7 @@ export default {
           store.dispatch("setWebSocket");
           setInterval(() => {
             store.dispatch("setWebSocket");
-          }, 4.5 * 1000);
+          }, 50 * 1000);
         },
       });
       return;
@@ -69,7 +69,7 @@ export default {
           store.dispatch("setWebSocket");
           setInterval(() => {
             store.dispatch("setWebSocket");
-          }, 4.5 * 1000);
+          }, 50 * 1000);
         },
         error(message) {
           alert(message);

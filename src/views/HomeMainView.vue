@@ -57,10 +57,16 @@
                                 </div>
                                 <div class="hot-user-right">
                                     <el-button 
-                                        v-show="!hotUserInfo.IsFollowed && hotUserInfo.UserId != myUserId"  
+                                        v-if="!hotUserInfo.IsFollowed && hotUserInfo.UserId != myUserId"  
                                         :round="true" 
-                                        @click="changeHotUserFollowStatus(hotUserInfo.UserId, index)">
+                                        @click="changeHotUserFollowStatus(true, hotUserInfo.UserId, index)">
                                         关注
+                                    </el-button>
+                                    <el-button 
+                                        v-if="hotUserInfo.IsFollowed && hotUserInfo.UserId != myUserId"  
+                                        :round="true" 
+                                        @click="changeHotUserFollowStatus(false, hotUserInfo.UserId, index)">
+                                        取关
                                     </el-button>
                                 </div>
                             </div>
@@ -89,7 +95,7 @@
 import HotPostShowInfo from '../components/post/HotPostShowInfo.vue';
 import { useStore } from 'vuex';
 import { computed, ref } from 'vue';
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
 
 export default {
     name: "HomeMainView",
@@ -136,21 +142,53 @@ export default {
             set() {
             }
         });
-        const changeHotUserFollowStatus = (userId, index) => {
-            store.dispatch("getFollowGroupList", {
-                success(result) {
-                    store.commit("refreshFollowGroupList", result);
-                    store.commit("updateFollowHotUserListIndex", index);
-                    store.commit("updateAddFollowPageType", 0);
-                    store.commit("updateAddFollowShowGroupVisible", {
-                        Status: true,
-                        UserId: userId
-                    });
-                },
-                error(message) {
-                    ElMessage.error(message);
-                }
-            });
+        const changeHotUserFollowStatus = (status, userId, index) => {
+            if (status) {
+                store.dispatch("getFollowGroupList", {
+                    success(result) {
+                        store.commit("refreshFollowGroupList", result);
+                        store.commit("updateFollowHotUserListIndex", index);
+                        store.commit("updateAddFollowPageType", 0);
+                        store.commit("updateAddFollowShowGroupVisible", {
+                            Status: true,
+                            UserId: userId
+                        });
+                    },
+                    error(message) {
+                        ElMessage.error(message);
+                    }
+                });
+            } else {
+                ElMessageBox.confirm('确定不关注此人？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    center: true,
+                    type: "warning",
+                    customStyle: {
+                        width: '300px'
+                    }
+                }).then(() => {
+                    // 点击确定按钮后执行的操作
+                    store.dispatch("cancelFollowByUserId", {
+                        param: {
+                            FromUserId: store.state.user.userId,
+                            ToUserId: userId
+                        },
+                        success() {
+                            store.commit("updateHotPostUserFollowStatus", {
+                                Status: false,
+                                UserId: userId
+                            });
+                            store.commit("updateFollowCountWithCancel");
+                        },
+                        error(message) {
+                            ElMessage.error(message);
+                        }
+                    })
+                }).catch(() => {
+                    // 点击取消按钮后执行的操作
+                });
+            }
         };
         const hotUserPageChanged = () => {
             store.dispatch("getHotUserList", {
@@ -263,9 +301,6 @@ export default {
     margin-top: 5px;
 }
 .hot-user-right {
-    margin-left: 15px;
-    width: 30%;
-    justify-content: center;
-    text-align: center;
+    justify-content: flex-end;
 }
 </style>

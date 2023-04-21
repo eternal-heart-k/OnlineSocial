@@ -18,11 +18,20 @@ const ModuleMessage = {
         updateMessageSelectType(state, status) {
             state.selectType = status;
         },
+        toChatPageFromPost(state, data) {
+            let index = state.chatUserList.findIndex(x => x.UserId == data.UserId);
+            if (index == -1) {
+                state.chatUserList.unshift(data);
+            }
+            state.currentChatUserId = data.UserId;
+            state.currentChatUserName = data.UserName;
+            state.currentChatUserAvatarUrl = data.AvatarUrl;
+        },
         refreshChatUserList(state, data) {
             state.chatUserList = data;
         },
         addChatUserList(state, data) {
-            state.chatUserList = data.concat(state.chatUserList);
+            state.chatUserList.unshift(data);
         },
         addNewMessageButNotCurrentChatUser(state, data) {
             let index = state.chatUserList.findIndex(x => x.UserId == data.UserId);
@@ -38,7 +47,7 @@ const ModuleMessage = {
                 newData.NotReadCount = state.chatUserList[index].NotReadCount + 1;
                 state.chatUserList.splice(index, 1);
             }
-            state.chatUserList.unshift(newData);            
+            state.chatUserList.unshift(newData);  
         },
         addNotReadCountFromChatUserList(state, data) {
             let index = state.chatUserList.findIndex(x => x.UserId == data.UserId);

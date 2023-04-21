@@ -7,6 +7,12 @@
                 class="chat-message-single" 
                 v-for="(chatMessage, index) of chatMessageList" :key="index"
             >
+                <div 
+                    class="chat-message-time" 
+                    v-if="index == 0 || chatTimeFormat(chatMessageList[index].CreationTime) != chatTimeFormat(chatMessageList[index - 1].CreationTime)"
+                >
+                    {{ chatTimeFormat(chatMessage.CreationTime) }}
+                </div>
                 <div v-show="chatMessage.SendUserId != myUserId" class="chat-message-left">
                     <el-avatar class="chat-message-avatar" :size="35" :src="chatUserAvatarUrl"></el-avatar>
                     <div class="chat-message-left-right">
@@ -98,14 +104,6 @@ export default {
             }
         });
         let newMessageText = ref('');
-        let socket = computed({
-            get() {
-                return store.state.socket;
-            },
-            set() {
-
-            }
-        });
         const getGuid = () => {
             return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
                 var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
@@ -119,22 +117,22 @@ export default {
         };
         const sendMessage = () => {
             if (newMessageText.value.trim() !== "") {
-                let newGuid = getGuid();
-                while (store.state.message.messageUIdSet.has(newGuid)) {
-                    newGuid = getGuid();
-                }
-                store.commit("addMessageUIdSet", newGuid);
-                let message = {
-                    UId: newGuid,
-                    Type: 2, 
-                    SendUserId: myUserId.value, 
-                    SendUserAvatarUrl: store.state.user.avatarUrl,
-                    SendUserName: store.state.user.userName,
-                    ReceiveUserId: chatUserId.value, 
-                    Content: newMessageText.value
-                };
-                if (socket.value.readyState === 1) {
-                    socket.value.send(JSON.stringify(message));
+                if (store.state.socket.readyState === 1) {
+                    let newGuid = getGuid();
+                    while (store.state.message.messageUIdSet.has(newGuid)) {
+                        newGuid = getGuid();
+                    }
+                    store.commit("addMessageUIdSet", newGuid);
+                    let message = {
+                        UId: newGuid,
+                        Type: 2, 
+                        SendUserId: myUserId.value, 
+                        SendUserAvatarUrl: store.state.user.avatarUrl,
+                        SendUserName: store.state.user.userName,
+                        ReceiveUserId: chatUserId.value, 
+                        Content: newMessageText.value
+                    };
+                    store.state.socket.send(JSON.stringify(message));
                     store.commit("addChatMessageList", {
                         SendUserId: message.SendUserId,
                         ReceiveUserId: message.ReceiveUserId,
@@ -162,7 +160,8 @@ export default {
                         Content: message.Content,
                     });
                 } else {
-                    ElMessage.error("socket未连接，请刷新后再次尝试");
+                    ElMessage.error("网络异常或请求频繁，请刷新或稍后重试");
+                    store.dispatch("setWebSocket");
                 }
             }
         };
@@ -173,7 +172,13 @@ export default {
             const day = date.getDate();
             const hours = date.getHours();
             const minutes = date.getMinutes();
-            return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')} ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+            let nowDate = new Date();
+            if (nowDate.getFullYear() != year) {
+                return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+            } else if (nowDate.getMonth() + 1 == month && nowDate.getDate() == day) {
+                return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+            }
+            return `${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
         };
         const chatContentFormat = (content) => {
             if (content == undefined || content == "") return content;
@@ -207,6 +212,15 @@ export default {
             }
             chatInputFocus.value = status;
         };
+        let hasNotReadMessage = computed({
+            get() {
+                let index = store.state.message.chatUserList.findIndex(x => x.UserId == chatUserId.value);
+                if (index == -1) return false;
+                return store.state.message.chatUserList[index].NotReadCount > 0;
+            },
+            set() {
+            }
+        });
         return {
             chatScrollRef,
             myUserId,
@@ -216,6 +230,7 @@ export default {
             chatUserName,
             chatUserAvatarUrl,
             chatInputFocus,
+            hasNotReadMessage,
             sendMessage,
             chatTimeFormat,
             chatContentFormat,
@@ -285,9 +300,6 @@ export default {
     max-width: 220px;
     word-break: break-word;
 }
-.chat-message-time {
-    font-size: 12px;
-}
 .chat-input {
     height: 21%;
 }
@@ -313,6 +325,10 @@ export default {
     margin-right: 18px;
     text-align: right;
     color: #a3a7ae;
+}
+.chat-message-time {
+    font-size: 12px;
+    text-align: center;
 }
 </style>
   

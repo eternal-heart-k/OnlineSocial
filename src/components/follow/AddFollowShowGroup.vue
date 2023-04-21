@@ -70,7 +70,10 @@ export default {
                 },
                 success() {
                     if (store.state.addFollowPageType == 0) {
-                        store.commit("updateHotUserFollowStatus");
+                        store.commit("updateHotPostUserFollowStatus", {
+                            Status: true,
+                            UserId: store.state.follow.addFollowUserId
+                        });
                     } else {
                         store.commit("updateFansUserFollowStatusByUserId", {
                             UserId: store.state.follow.addFollowUserId,
