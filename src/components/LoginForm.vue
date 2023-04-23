@@ -156,6 +156,17 @@ export default {
                     error_message.value = "";
                     login_text.value = "登录";
                     router.push({name: "home"});
+                    store.dispatch("setWebSocket", {
+                        success() {
+                        }
+                    });
+                    setInterval(() => {
+                        store.dispatch("setWebSocket", {
+                            success() {
+                            }
+                        });
+                    }, 50 * 1000);
+                    store.dispatch("refreshMessagePage");
                 },
                 error(message) {
                     error_message.value = message;

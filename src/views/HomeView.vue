@@ -1,7 +1,7 @@
 <template>
   <el-container>
     <el-main>
-      <HomeMainView />
+      <HomeMainView :isFollowedUserPost="isFollowedUserPost" />
     </el-main>
   </el-container>
 </template>
@@ -15,6 +15,12 @@ export default {
   name: 'HomeView',
   components: {
     HomeMainView,
+  },
+  props: {
+    isFollowedUserPost: {
+      type: Boolean,
+      default: false,
+    }
   },
   beforeCreate() {
     const store = useStore();
@@ -31,10 +37,10 @@ export default {
               PageSize: 5
             },
             success(result) {
-                store.commit("refreshHotUserList", result);
+              store.commit("refreshHotUserList", result);
             },
             error(message) {
-                ElMessage.error(message);
+              ElMessage.error(message);
             }
           });
         },

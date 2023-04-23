@@ -28,7 +28,7 @@
                 </el-card>
             </el-col>
             <el-col :span="10" class="hot-post-main">
-                <HotPostShowInfo ref="hotPostShowInfoRef" />
+                <HotPostShowInfo ref="hotPostShowInfoRef" :isFollowedUserPost="isFollowedUserPost" />
             </el-col>
             <el-col :span="5">
                 <el-card shadow="always" class="hot-post-right">
@@ -101,6 +101,12 @@ export default {
     name: "HomeMainView",
     components: {
         HotPostShowInfo,
+    },
+    props: {
+        isFollowedUserPost: {
+            type: Boolean,
+            default: false,
+        }
     },
     setup() {
         const store = useStore();

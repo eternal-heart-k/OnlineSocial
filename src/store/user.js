@@ -13,6 +13,7 @@ const ModuleUser = {
         accessToken: "",
         refreshToken: "",
         isLogin: false,
+        isAdmin: false,
 
         fansListVisible: false,
         fansList: [],
@@ -33,6 +34,7 @@ const ModuleUser = {
             state.gender = user.Gender == 1 ? "男" : "女";
             state.birthday = user.Birthday;
             state.isLogin = user.IsLogin;
+            state.isAdmin = user.Type === 0;
         },
         updateToken(state, token) {
             state.accessToken = token.AccessToken;
@@ -61,7 +63,7 @@ const ModuleUser = {
                     break;
                 }
             }
-        }
+        },
     },
     actions: {
         getUserInfoByUserId(context, data) {

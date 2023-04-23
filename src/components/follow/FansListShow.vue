@@ -6,8 +6,9 @@
         :before-close="handleClose"
         lock-scroll
         center
+        class="fans-dialog"
     >
-        <div class="fans-module">
+        <el-scrollbar class="fans-module">
             <div v-infinite-scroll="loadMoreFans" :infinite-scroll-disabled="scrollDisabled">
                 <el-row class="fans-single" v-for="(fansInfo, index) of fansList" :key="index">
                     <el-col :span="3">
@@ -16,10 +17,10 @@
                         </el-tooltip>
                     </el-col>
                     <el-col :span="15">
-                        <el-row>
+                        <div class="fans-single-main">
                             <div class="fans-username text-overflow">{{ fansInfo.UserName }}</div>
                             <div class="fans-signature text-overflow">{{ fansInfo.PersonalSignature }}</div>
-                        </el-row>
+                        </div>
                     </el-col>
                     <el-col :span="1"></el-col>
                     <el-col :span="5">
@@ -44,7 +45,7 @@
             </div>
             <p class="load-text" v-if="loading">Loading...</p>
             <p class="load-text" v-if="noMore">所有粉丝已加载完毕~</p>
-        </div>
+        </el-scrollbar>
     </el-dialog>
 </template>
 
@@ -169,12 +170,18 @@ export default {
 
 <style scoped>
 .fans-module {
-    overflow: hidden;
-    height: 500px;
+    overflow: auto;
+    height: 400px;
 }
 .fans-single {
     align-items: center;
     margin-bottom: 10px;
+    margin-right: 20px;
+}
+.fans-single-main {
+    display: flex;
+    flex-direction: column;
+    margin-left: 5px;
 }
 .load-text {
     text-align: center;

@@ -7,7 +7,7 @@
         :before-close="handleClose"
         :lock-scroll="true"
     >
-        <div class="subcomment-content-module">
+        <el-scrollbar class="subcomment-content-module">
             <div class="subcomment-content">
                 <div class="subcomment-content-rootcomment flex-box">
                     <div class="rootcomment-left">
@@ -93,13 +93,13 @@
                                             <Delete />
                                         </el-icon>
                                     </div>
-                                    <div class="subcomment-single-comment btn hover-orange gray" @click="commentSubComment(subcomment.UserName, subcomment.Id)">
+                                    <div class="subcomment-single-comment btn hover-orange gray" @click="commentSubComment(subcomment.UserName, subcomment.Id, subcomment.UserId)">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-square-text" viewBox="0 0 16 16">
                                             <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-2.5a2 2 0 0 0-1.6.8L8 14.333 6.1 11.8a2 2 0 0 0-1.6-.8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2.5a1 1 0 0 1 .8.4l1.9 2.533a1 1 0 0 0 1.6 0l1.9-2.533a1 1 0 0 1 .8-.4H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
                                             <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
                                         </svg>
                                     </div>
-                                    <div class="subcomment-single-like btn hover-orange gray" :class="{orange: subcomment.IsLiked}" @click="likeSubComment(subcomment.Id, index, subcomment.IsLiked)">
+                                    <div class="subcomment-single-like btn hover-orange gray" :class="{orange: subcomment.IsLiked}" @click="likeSubComment(subcomment.Id, index, subcomment.IsLiked, subcomment.UserId)">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-up" viewBox="0 0 16 16">
                                             <path d="M8.864.046C7.908-.193 7.02.53 6.956 1.466c-.072 1.051-.23 2.016-.428 2.59-.125.36-.479 1.013-1.04 1.639-.557.623-1.282 1.178-2.131 1.41C2.685 7.288 2 7.87 2 8.72v4.001c0 .845.682 1.464 1.448 1.545 1.07.114 1.564.415 2.068.723l.048.03c.272.165.578.348.97.484.397.136.861.217 1.466.217h3.5c.937 0 1.599-.477 1.934-1.064a1.86 1.86 0 0 0 .254-.912c0-.152-.023-.312-.077-.464.201-.263.38-.578.488-.901.11-.33.172-.762.004-1.149.069-.13.12-.269.159-.403.077-.27.113-.568.113-.857 0-.288-.036-.585-.113-.856a2.144 2.144 0 0 0-.138-.362 1.9 1.9 0 0 0 .234-1.734c-.206-.592-.682-1.1-1.2-1.272-.847-.282-1.803-.276-2.516-.211a9.84 9.84 0 0 0-.443.05 9.365 9.365 0 0 0-.062-4.509A1.38 1.38 0 0 0 9.125.111L8.864.046zM11.5 14.721H8c-.51 0-.863-.069-1.14-.164-.281-.097-.506-.228-.776-.393l-.04-.024c-.555-.339-1.198-.731-2.49-.868-.333-.036-.554-.29-.554-.55V8.72c0-.254.226-.543.62-.65 1.095-.3 1.977-.996 2.614-1.708.635-.71 1.064-1.475 1.238-1.978.243-.7.407-1.768.482-2.85.025-.362.36-.594.667-.518l.262.066c.16.04.258.143.288.255a8.34 8.34 0 0 1-.145 4.725.5.5 0 0 0 .595.644l.003-.001.014-.003.058-.014a8.908 8.908 0 0 1 1.036-.157c.663-.06 1.457-.054 2.11.164.175.058.45.3.57.65.107.308.087.67-.266 1.022l-.353.353.353.354c.043.043.105.141.154.315.048.167.075.37.075.581 0 .212-.027.414-.075.582-.05.174-.111.272-.154.315l-.353.353.353.354c.047.047.109.177.005.488a2.224 2.224 0 0 1-.505.805l-.353.353.353.354c.006.005.041.05.041.17a.866.866 0 0 1-.121.416c-.165.288-.503.56-1.066.56z"/>
                                         </svg>
@@ -113,12 +113,14 @@
                     <p class="load-text" v-if="noMore">没有更多内容了~</p>
                 </div>
             </div>
-        </div>
+        </el-scrollbar>
     </el-dialog>
     <SubCommentReplyForm
         :userName="subCommentReplyUserName"
+        :userId="subCommentReplyUserId"
         :commentId="subCommentReplyId"
         :commentRootId="subCommentReplyRootId"
+        :pageType="pageType"
     />
 </template>
 
@@ -140,10 +142,15 @@ export default {
             type: Object,
             default: () => ({}),
         },
+        pageType: {
+            type: Number,
+            default: -1,
+        }
     },
     setup(props) {
         const store = useStore();
         let subCommentReplyUserName = ref("");
+        let subCommentReplyUserId = ref("");
         let subCommentReplyId = ref(0);
         let subCommentReplyRootId = ref(0);
         let title = computed({
@@ -203,6 +210,12 @@ export default {
             const minutes = date.getMinutes();
             return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')} ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
         };
+        const getGuid = () => {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+                return v.toString(16);
+            });
+        };
         const showImagePre = (url) => {
             store.commit("setNowImagePreview", url);
             document.body.style.overflow = 'hidden';
@@ -224,7 +237,11 @@ export default {
                     Id: rootCommentInfo.value.Id,
                     success() {
                         store.commit("deleteRootComment");
-                        store.commit("deleteMyPostCommentByCommentId", commentId);
+                        if (props.pageType == 0) {
+                            store.commit("deleteHotPostCommentByCommentId", commentId);
+                        } else {
+                            store.commit("deleteMyPostCommentByCommentId", commentId);
+                        }
                         ElMessage({
                             message: "删除成功",
                             type: 'success',
@@ -238,9 +255,38 @@ export default {
                 // 点击取消按钮后执行的操作
             });
         };
+        const sendLikeNotification = (userId, targetId) => {
+            let newGuid = getGuid();
+            while (store.state.message.messageUIdSet.has(newGuid)) {
+                newGuid = getGuid();
+            }
+            store.commit("addMessageUIdSet", newGuid);
+            let message = {
+                UId: newGuid,
+                Type: 1, 
+                SendUserId: store.state.user.userId, 
+                SendUserAvatarUrl: store.state.user.avatarUrl,
+                SendUserName: store.state.user.userName,
+                ReceiveUserId: userId, 
+                Content: "点赞了你的评论",
+                TargetId: targetId
+            };
+            if (store.state.socket.readyState === 1) {
+                store.state.socket.send(JSON.stringify(message));
+            } else if (store.state.socket.readyState === 0) {
+                setTimeout(() => store.state.socket.send(JSON.stringify(message)), 2000);
+            } else {
+                store.dispatch("setWebSocket", {
+                    success() {
+                        setTimeout(() => store.state.socket.send(JSON.stringify(message)), 2000);
+                    }
+                });
+            }
+        }
         const commentRootComment = () => {
             store.commit("updateSubCommentCommentVisible", true);
             subCommentReplyUserName.value = "回复@" + rootCommentInfo.value.UserName;
+            subCommentReplyUserId.value = rootCommentInfo.value.UserId;
             subCommentReplyId.value = rootCommentInfo.value.Id;
             subCommentReplyRootId.value = rootCommentInfo.value.Id;
         };
@@ -258,6 +304,8 @@ export default {
                     } else {
                         rootCommentInfo.value.LikeCount ++ ;
                     }
+                    if (isLiked || store.state.user.userId == rootCommentInfo.value.UserId) return ;
+                    sendLikeNotification(rootCommentInfo.value.UserId, rootCommentInfo.value.Id);
                 },
                 error(message) {
                     ElMessage.error(message);
@@ -345,13 +393,14 @@ export default {
                 // 点击取消按钮后执行的操作
             });
         };
-        const commentSubComment = (userName, subCommentId) => {
+        const commentSubComment = (userName, subCommentId, subCommentUserId) => {
             store.commit("updateSubCommentCommentVisible", true);
             subCommentReplyUserName.value = "回复@" + userName;
+            subCommentReplyUserId.value = subCommentUserId;
             subCommentReplyId.value = subCommentId;
             subCommentReplyRootId.value = rootCommentInfo.value.Id;
         };
-        const likeSubComment = (subCommentId, index, isLiked) => {
+        const likeSubComment = (subCommentId, index, isLiked, userId) => {
             let data = {
                 param: {
                     Type: 1,
@@ -363,6 +412,8 @@ export default {
                         Index: index,
                         Status: isLiked
                     });
+                    if (isLiked || store.state.user.userId == userId) return ;
+                    sendLikeNotification(userId, subCommentId);
                 },
                 error(message) {
                     ElMessage.error(message);
@@ -397,6 +448,7 @@ export default {
             noMore,
             scrollDisabled,
             subCommentReplyUserName,
+            subCommentReplyUserId,
             subCommentReplyId,
             subCommentReplyRootId,
             hideForm,

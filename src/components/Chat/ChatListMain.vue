@@ -159,9 +159,14 @@ export default {
                         CreationTime: new Date(),
                         Content: message.Content,
                     });
+                } else if (store.state.socket.readyState === 0) {
+                    ElMessage.error("请求频繁，请稍后重试");
                 } else {
-                    ElMessage.error("网络异常或请求频繁，请刷新或稍后重试");
-                    store.dispatch("setWebSocket");
+                    store.dispatch("setWebSocket", {
+                        success() {
+                            setTimeout(() => sendMessage(), 1000);
+                        }
+                    });
                 }
             }
         };

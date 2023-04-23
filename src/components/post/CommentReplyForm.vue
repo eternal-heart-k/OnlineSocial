@@ -71,6 +71,10 @@ export default {
             type: String,
             default: "",
         },
+        userId: {
+            type: String,
+            default: "",
+        },
         commentId: {
             type: Number,
             default: 0,
@@ -87,6 +91,10 @@ export default {
             type: Number,
             default: -1,
         },
+        pageType: {
+            type: Number,
+            default: -1
+        }
     },
     setup(props) {
         const store = useStore();
@@ -141,7 +149,43 @@ export default {
                 imagePre.value = reader.result;
             };
         };
+        const getGuid = () => {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+                return v.toString(16);
+            });
+        };
+        const sendMessageWithCommentPostComment = (content) => {
+            if (props.userId == "" || store.state.user.userId == props.userId) return ;
+            let newGuid = getGuid();
+            while (store.state.message.messageUIdSet.has(newGuid)) {
+                newGuid = getGuid();
+            }
+            store.commit("addMessageUIdSet", newGuid);
+            let message = {
+                UId: newGuid,
+                Type: 4, 
+                SendUserId: store.state.user.userId, 
+                SendUserAvatarUrl: store.state.user.avatarUrl,
+                SendUserName: store.state.user.userName,
+                ReceiveUserId: props.userId, 
+                Content: "评论了你的评论：" + content,
+                TargetId: props.commentId
+            };
+            if (store.state.socket.readyState === 1) {
+                store.state.socket.send(JSON.stringify(message));
+            } else if (store.state.socket.readyState === 0) {
+                setTimeout(() => store.state.socket.send(JSON.stringify(message)), 2000);
+            } else {
+                store.dispatch("setWebSocket", {
+                    success() {
+                        setTimeout(() => store.state.socket.send(JSON.stringify(message)), 2000);
+                    }
+                });
+            }
+        };
         const commentComment = (result) => {
+            let tmpContent = content.value;
             store.dispatch("commentComment", {
                 param: {
                     Type: 1,
@@ -155,18 +199,26 @@ export default {
                     loading.value = false;
                     hideForm();
                     clearValue();
-                    store.commit("updateMyPostCommentReplyCount", {
-                        PostIndex: props.postIndex,
-                        PostCommentIndex: props.postCommentIndex
-                    });
+                    if (props.pageType == 0) {
+                        store.commit("updateHotPostCommentReplyCount", {
+                            PostIndex: props.postIndex,
+                            PostCommentIndex: props.postCommentIndex
+                        });
+                    } else {
+                        store.commit("updateMyPostCommentReplyCount", {
+                            PostIndex: props.postIndex,
+                            PostCommentIndex: props.postCommentIndex
+                        });
+                    }
                     ElMessage({
                         message: "回复成功",
                         type: 'success',
                     });
+                    sendMessageWithCommentPostComment(tmpContent);
                 },
                 error(message) {
                     loading.value  = false;
-                    alert(message);
+                    ElMessage.error(message);
                 }
             });
         };
@@ -188,7 +240,7 @@ export default {
                     },
                     error(message) {
                         loading.value  = false;
-                        alert(message);
+                        ElMessage.error(message);
                     }
                 });
             } else {

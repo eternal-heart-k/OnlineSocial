@@ -20,7 +20,7 @@
                 <el-input v-model="birthday" type="date"></el-input>
             </el-form-item>
             <el-form-item label="个性签名">
-                <el-input v-model="personalSignature" type="textarea" :rows="4"></el-input>
+                <el-input v-model="personalSignature" type="textarea" :maxlength="100" show-word-limit :autosize="{minRows:4}" resize="none"></el-input>
             </el-form-item>
         </el-form>
 

@@ -1,19 +1,19 @@
 <template>
     <el-dialog 
-        class="follow-group-module"
         v-model="visible" 
         width="35%" 
         :before-close="handleClose"
         :lock-scroll="true"
         title="关注组信息"
         center
+        class="follow-group-module"
     >
         <div class="follow-group-module-inner">
             <div class="follow-group-options">
                 <el-button type="success" @click="addFollowGroup">添加关注组</el-button>
                 <el-button type="danger" @click="deleteFollowGroup">删除关注组</el-button>
             </div>
-            <div class="follow-group-show">
+            <el-scrollbar class="follow-group-show">
                 <el-collapse class="follow-group-content" v-model="activeNames" @change="changeFollowInfoStatus">
                     <el-collapse-item 
                         v-for="(followInfos, groupIndex) of followGroupList" 
@@ -49,7 +49,7 @@
                         </div>
                     </el-collapse-item>
                 </el-collapse>
-            </div>
+            </el-scrollbar>
         </div>
     </el-dialog>
     <ChangeFollowGroup />
@@ -238,12 +238,12 @@ export default {
 .follow-group-single .el-collapse-item__wrap .el-collapse-item__content {
     padding-bottom: 0;
 }
-.follow-group-module .el-dialog__body {
-    padding-right: 0;
-}
 </style>
 
 <style scoped>
+.follow-group-content {
+    padding-right: 10px;
+}
 .follow-group-options {
     margin-bottom: 10px;
 }

@@ -14,17 +14,19 @@
         </div>
         <div class="box center">
           <router-link :to="{name: 'hot' }">
-            <el-link class="no-select btn" type="primary" :underline="false" target="_blank" :style="{ 'font-size': '17px' }" @click="goToHotPage">热门</el-link>
+            <el-link class="no-select btn" type="primary" :underline="false" target="_blank" :style="{ 'font-size': '17px' }" @click="goToHotPage(false)">热门</el-link>
           </router-link>
         </div>
         <div class="box center">
           <router-link :to="{name: 'myFollow' }">
-            <el-link class="no-select btn" type="primary" :underline="false" target="_blank" :style="{ 'font-size': '17px' }">关注</el-link>
+            <el-link class="no-select btn" type="primary" :underline="false" target="_blank" :style="{ 'font-size': '17px' }" @click="goToHotPage(true)">关注</el-link>
           </router-link>
         </div>
         <div class="box center">
           <router-link :to="{name: 'message' }">
-            <el-icon class="btn" :size="27" color="black" @click="goToMessagePage"><Message /></el-icon>
+            <el-badge :is-dot="hasNotReadMessage">
+              <el-icon class="btn" :size="27" color="black" @click="goToMessagePage"><Message /></el-icon>
+            </el-badge>
           </router-link>
         </div>
         <div class="box center">
@@ -91,7 +93,11 @@ export default {
       });
     };
     const ShowEditFeedback = () => {
-      alert("用户反馈");
+      if (!store.state.user.isLogin) {
+        ElMessage.error("暂未登录，请先登录");
+          return;
+      }
+      store.commit("updateFeedbackDialogVisibleStatus", true);
     };
     const LogOut = () => {
       ElMessageBox.confirm('确认退出么？', '提示', {
@@ -115,7 +121,10 @@ export default {
     const loginShow = () => {
       $(".login_module").show();
     };
-    const goToHotPage = () => {
+    const goToHotPage = (isFollowedUserPost) => {
+      store.commit("updateHotPostLoading", true);
+      store.commit("updateHotPostNoMore", false);
+      store.commit("clearHotPostList");
       store.dispatch("getPostList", {
         param: {
           MyUserId: store.state.user.userId,
@@ -123,29 +132,47 @@ export default {
           PostOrderType: 0,
           CommentOrderType: 0,
           RangeType: store.state.post.hotRangeType,
-          IsRead: true
+          IsRead: true,
+          IsFollowedUserPost: isFollowedUserPost
         },
         success(result) {
+          if (result.Items.length == 0) {
+            store.commit("updateHotPostNoMore", true);
+          }
+          store.commit("updateHotPostLoading", false);
           store.commit("refreshHotPostList", result.Items);
         },
         error(message) {
+          store.commit("updateHotPostLoading", false);
           ElMessage.error(message);
         }
       });
     };
     const goToMessagePage = () => {
-
-      if (store.state.message.selectType == 0) { // 聊天类型
-        store.dispatch("getChatUserList", {
-          success(result) {
-              store.commit("refreshChatUserList", result);
-          },
-          error(message) {
-              ElMessage.error(message);
-          }
-        });
-      }
+      store.dispatch("refreshMessagePage");
     };
+    let hasNotReadMessage = computed({
+      get() {
+        for (let i = 0; i < 2; i ++ ) {
+          if (store.state.message.messageNotifyNotReadCount[i] > 0) {
+            return true;
+          }
+        }
+        if (store.state.user.isAdmin && store.state.feedback.feedbackMessageNotifyNotReadCount > 0) {
+          return true;
+        } else if (!store.state.user.isAdmin && store.state.message.messageNotifyNotReadCount[2] > 0) {
+          return true;
+        }
+        for (let item of store.state.message.chatUserList) {
+          if (item.NotReadCount > 0) {
+            return true;
+          }
+        }
+        return false;
+      },
+      set() {
+      }
+    });
     return {
       search,
       ShowEditPost,
@@ -157,6 +184,7 @@ export default {
       searchContent,
       avatarUrl,
       isLogin,
+      hasNotReadMessage,
       Search,
     }
   },

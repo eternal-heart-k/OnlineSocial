@@ -11,6 +11,11 @@ const ModuleMessage = {
         currentChatUserAvatarUrl: "",
         messageUIdSet: new Set(),
         getMessageUIdSet: new Set(),
+
+        messageNotifyList: [[], [], []],
+        messageNotifyTotalCount: [0, 0, 0],
+        messageNotifyPageIndex: [1, 1, 1],
+        messageNotifyNotReadCount: [0, 0, 0],
     },
     getters: {
     },
@@ -97,6 +102,38 @@ const ModuleMessage = {
         addGetMessageUIdSet(state, data) {
             state.getMessageUIdSet.add(data);
         },
+
+        refreshMessageNotifyList(state, data) {
+            state.messageNotifyList[data.Index] = data.Items;
+            state.messageNotifyTotalCount[data.Index] = data.TotalCount;
+            state.messageNotifyPageIndex[data.Index] = 2;
+        },
+        addMessageNotifyList(state, data) {
+            state.messageNotifyList[data.Index] = state.messageNotifyList[data.Index].concat(data.Items);
+            state.messageNotifyPageIndex[data.Index] ++ ;
+        },
+        setMessageNotifyNotReadCount(state, data) {
+            state.messageNotifyNotReadCount[data.Index] = data.NotReadCount;
+        },
+        addNewMessageNotify(state, data) {
+            state.messageNotifyList[data.Index].unshift(data.Message);
+            state.messageNotifyTotalCount[data.Index] ++ ;
+            state.messageNotifyNotReadCount[data.Index] ++ ;
+        },
+        refreshMesageNotifyListWithNotRead(state, data) {
+            state.messageNotifyList[data.Index] = data.Items;
+            state.messageNotifyPageIndex[data.Index] = 2;
+        },
+        updateMessageNotifyReadStatusSingle(state, data) {
+            state.messageNotifyList[data.Index][data.IndexOfList].HasRead = true;
+            state.messageNotifyNotReadCount[data.Index] -- ;
+        },
+        updateMessageNotifyReadStatusAll(state, data) {
+            for (let item of state.messageNotifyList[data.Index]) {
+                item.HasRead = true;
+            }
+            state.messageNotifyNotReadCount[data.Index] = 0;
+        }
     },
     actions: {
         getChatUserList(context, data) {
@@ -155,6 +192,130 @@ const ModuleMessage = {
                 }
             });
         },
+        getNotificationListByType(context, data) {
+            $.ajax({
+                url: context.rootState.urlPre + "/api/notification/page",
+                type: "post",
+                headers: {
+                    'Authorization': "Bearer " + context.rootState.user.accessToken,
+                },
+                data: JSON.stringify(data.param),
+                contentType: "application/json",
+                success(resp) {
+                    if (resp.IsSuccess) {
+                        data.success(resp.Result);
+                    } else {
+                        data.error(resp.Message);
+                    }
+                }
+            });
+        },
+        updateNotificationReadStatusList(context, data) {
+            $.ajax({
+                url: context.rootState.urlPre + `/api/notification/list?userId=${data.UserId}&type=${data.Type}`,
+                type: "put",
+                headers: {
+                    'Authorization': "Bearer " + context.rootState.user.accessToken,
+                },
+                success(resp) {
+                    if (resp.IsSuccess) {
+                        data.success();
+                    } else {
+                        data.error(resp.Message);
+                    }
+                }
+            });
+        },
+        updateNotificationReadStatusById(context, data) {
+            $.ajax({
+                url: context.rootState.urlPre + "/api/notification?id=" + data.Id,
+                type: "put",
+                headers: {
+                    'Authorization': "Bearer " + context.rootState.user.accessToken,
+                },
+                success(resp) {
+                    if (resp.IsSuccess) {
+                        data.success();
+                    } else {
+                        data.error(resp.Message);
+                    }
+                }
+            });
+        },
+        getNotificationNotReadCount(context, data) {
+            $.ajax({
+                url: context.rootState.urlPre + `/api/notification/not/read/count?userId=${data.UserId}&type=${data.Type}`,
+                type: "get",
+                headers: {
+                    'Authorization': "Bearer " + context.rootState.user.accessToken,
+                },
+                success(resp) {
+                    if (resp.IsSuccess) {
+                        data.success(resp.Result);
+                    } else {
+                        data.error(resp.Message);
+                    }
+                }
+            });
+        },
+        refreshMessagePage(context) {
+            context.dispatch("getChatUserList", {
+                success(result) {
+                    context.commit("refreshChatUserList", result);
+                },
+                error(message) {
+                    ElMessage.error(message);
+                }
+            });
+            for (let i = 0; i < 3; i ++ ) {
+                context.dispatch("getNotificationListByType", {
+                    param: {
+                        PageIndex: 1,
+                        PageSize: 20,
+                        UserId: context.rootState.user.userId,
+                        Type: i
+                    },
+                    success(result) {
+                        result["Index"] = i;
+                        context.commit("refreshMessageNotifyList", result);
+                    },
+                    error(message) {
+                        ElMessage.error(message);
+                    }
+                });
+                context.dispatch("getNotificationNotReadCount", {
+                    UserId: context.rootState.user.userId,
+                    Type: i,
+                    success(result) {
+                        context.commit("setMessageNotifyNotReadCount", {
+                            Index: i,
+                            NotReadCount: result
+                        });
+                    },
+                    error(message) {
+                        ElMessage.error(message);
+                    }
+                });
+            }
+        },
+        updateMessageNotifyHasReadByInfo(context, data) {
+            $.ajax({
+                url: context.rootState.urlPre + '/api/notification/by/info',
+                type: "put",
+                headers: {
+                    'Authorization': "Bearer " + context.rootState.user.accessToken,
+                },
+                data: JSON.stringify(data.param),
+                contentType: "application/json",
+                success(resp) {
+                    if (resp.IsSuccess) {
+                        data.success();
+                    } else {
+                        data.error(resp.Message);
+                    }
+                }
+            });
+        }
     },
     modules: {
     }

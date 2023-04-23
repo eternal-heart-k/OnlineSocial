@@ -1,18 +1,28 @@
 <template>
     <el-dialog 
-        :title=userName
-        v-model="dialogVisible" 
-        width="40%" 
+        title="反馈信息"
+        v-model="visible" 
+        width="30%" 
+        center
         :before-close="handleClose"
     >
         <el-form label-width="20%" @submit.prevent>
+            <el-select v-model="feedbackType" class="m-2 feedback-select" placeholder="请选择反馈类型">
+                <el-option
+                    v-for="item in selectOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                />
+            </el-select>
             <el-input 
                 v-model="content" 
-                :maxlength="100"
+                :maxlength="300"
                 :show-word-limit="true"
                 type="textarea"
                 resize="none" 
-                :autosize="{minRows: 2}"
+                :autosize="{minRows: 4}"
+                placeholder="请填写反馈内容，可同时提供一张图片"
             ></el-input>
         </el-form>
         
@@ -54,59 +64,35 @@
         </template>
     </el-dialog>
 </template>
-  
+
 <script>
 import { useStore } from 'vuex';
 import { computed, ref } from 'vue';
-import { ElMessageBox, ElMessage } from 'element-plus';
-import { Picture } from "@element-plus/icons";
+import { ElMessage, ElMessageBox } from 'element-plus';
 
 export default {
-    name: "SubCommentReplyForm",
-    components: {
-        Picture,
-    },
-    props: {
-        userName: {
-            type: String,
-            default: "",
-        },
-        userId: {
-            type: String,
-            default: "",
-        },
-        commentId: {
-            type: Number,
-            default: 0,
-        },
-        commentRootId: {
-            type: Number,
-            default: 0,
-        },
-        pageType: {
-            type: Number,
-            default: -1,
-        }
-    },
-    setup(props) {
+    name: "FeedbackShow",
+    setup() {
         const store = useStore();
-        let content = ref("");
-        let image = ref(null);
-        let imagePre = ref(null);
-        let dialogVisible = computed({
+        let visible = computed({
             get() {
-                return store.state.comment.subCommentCommentVisible;
+                return store.state.feedback.feedbackDialogVisible;
             },
             set() {
             }
         });
+        let content = ref("");
+        let image = ref(null);
+        let imagePre = ref(null);
         let loading = ref(false);
-
+        let feedbackType = ref(null);
         const hideForm = () => {
-            store.commit("updateSubCommentCommentVisible", false);
+            store.commit("updateFeedbackDialogVisibleStatus", false);
+            feedbackType.value = null;
         };
         const clearValue = () => {
             content.value = "";
+            feedbackType.value = null;
             image.value = null;
             imagePre.value = null;
         };
@@ -141,49 +127,11 @@ export default {
                 imagePre.value = reader.result;
             };
         };
-        const getGuid = () => {
-            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-                return v.toString(16);
-            });
-        };
-        const sendMessageWithCommentComment = (content) => {
-            if (props.userId == "" || store.state.user.userId == props.userId) return ;
-            let newGuid = getGuid();
-            while (store.state.message.messageUIdSet.has(newGuid)) {
-                newGuid = getGuid();
-            }
-            store.commit("addMessageUIdSet", newGuid);
-            let message = {
-                UId: newGuid,
-                Type: 4, 
-                SendUserId: store.state.user.userId, 
-                SendUserAvatarUrl: store.state.user.avatarUrl,
-                SendUserName: store.state.user.userName,
-                ReceiveUserId: props.userId, 
-                Content: "评论了你的评论：" + content,
-                TargetId: props.commentId
-            };
-            if (store.state.socket.readyState === 1) {
-                store.state.socket.send(JSON.stringify(message));
-            } else if (store.state.socket.readyState === 0) {
-                setTimeout(() => store.state.socket.send(JSON.stringify(message)), 2000);
-            } else {
-                store.dispatch("setWebSocket", {
-                    success() {
-                        setTimeout(() => store.state.socket.send(JSON.stringify(message)), 2000);
-                    }
-                });
-            }
-        };
-        const commentComment = (result) => {
-            let tmpContent = content.value;
-            store.dispatch("commentComment", {
+        const feedback = (result) => {
+            store.dispatch("addFeedback", {
                 param: {
-                    Type: 1,
-                    TargetId: props.commentId,
-                    CommentRootId: props.commentRootId,
                     UserId: store.state.user.userId,
+                    Type: feedbackType.value,
                     Content: content.value,
                     Image: result
                 },
@@ -192,45 +140,35 @@ export default {
                     hideForm();
                     clearValue();
                     ElMessage({
-                        message: "回复成功",
+                        message: "反馈成功，感谢你的反馈~",
                         type: 'success',
                     });
-                    if (props.pageType == 0) {
-                        store.commit("updateHotPostCommentReplyCountByRootCommentId", props.commentRootId);
-                    } else {
-                        store.commit("updateMyPostCommentReplyCountByRootCommentId", props.commentRootId);
-                    }
-                    sendMessageWithCommentComment(tmpContent);
                 },
                 error(message) {
                     loading.value  = false;
-                    alert(message);
+                    ElMessage.error(message);
                 }
             });
         };
         const submitForm = () => {
-            if (content.value == "" && image.value == null) {
-                ElMessage({
-                    showClose: true,
-                    message: '回复内容不能为空',
-                    type: 'warning',
-                });
+            if (content.value == "") {
+                ElMessage.error("反馈内容不能为空");
                 return;
             }
-            loading.value  = true;
+            loading.value = true;
             if (image.value != null) {
                 store.dispatch("uploadSingleImage", {
                     File: image.value,
                     success(result) {
-                        commentComment(result);
+                        feedback(result);
                     },
                     error(message) {
                         loading.value  = false;
-                        alert(message);
+                        ElMessage.error(message);
                     }
                 });
             } else {
-                commentComment(null);
+                feedback(null);
             }
         };
         const showImagePre = () => {
@@ -242,22 +180,36 @@ export default {
             image.value = null;
             imagePre.value = null;
         };
+        const selectOptions = [
+            {
+                value: 1,
+                label: '发现系统Bug',
+            },
+            {
+                value: 2,
+                label: '举报不良用户',
+            },
+            {
+                value: 0,
+                label: '其他',
+            },
+        ]
         return {
+            visible,
             content,
             image,
             imagePre,
-            dialogVisible,
             loading,
-            hideForm,
-            clearValue,
+            feedbackType,
+            selectOptions,
             handleClose,
             uploadCommentImage,
             submitForm,
             showImagePre,
             removeCommentImage,
         }
-    },
-};
+    }
+}
 </script>
 
 <style scoped>
@@ -280,5 +232,8 @@ export default {
     top: 2px;
     right: 2px;
     color: gray;
+}
+.feedback-select {
+    margin-bottom: 20px;
 }
 </style>

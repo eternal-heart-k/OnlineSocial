@@ -1,13 +1,17 @@
 <template>
-    <div class="my-follow-module">
-        <h1>我的关注</h1>
-    </div>
+    <HomeView 
+        :isFollowedUserPost="true"
+    />
 </template>
 
 <script>
+import HomeView from './HomeView.vue';
 
 export default {
     name: "MyFollowView",
+    components: {
+        HomeView,
+    }
 }
 </script>
 

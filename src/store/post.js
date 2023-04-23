@@ -11,9 +11,8 @@ const ModulePost = {
         hotUserList: [],
         hotUserTotalCount: 0,
         followHotUserListIndex: 0,
-
-        followPostList: [],
-        followPageIndex: 1,
+        hotPostLoading: false,
+        hotPostNoMore: false,
 
         myPostList: [],
         myPageIndex: 1,
@@ -24,6 +23,15 @@ const ModulePost = {
     mutations: {
         updatePostEditShow(state, status) {
             state.postEditShow = status;
+        },
+        updateHotPostLoading(state, status) {
+            state.hotPostLoading = status;
+        },
+        updateHotPostNoMore(state, status) {
+            state.hotPostNoMore = status;
+        },
+        clearHotPostList(state) {
+            state.hotPostList = [];
         },
         refreshHotPostList(state, data) {
             state.hotPageIndex = 2;
@@ -117,18 +125,36 @@ const ModulePost = {
                 }
             }
         },
-
-
-
-        refreshFollowPostList(state, data) {
-            state.followPageIndex = 2;
-            state.followPostList = data;
+        updateHotPostCommentReplyCount(state, data) {
+            state.hotPostList[data.PostIndex].PostCommentList[data.PostCommentIndex].ReplyCount ++ ;
         },
-        addFollowPostList(state, data) {
-            state.followPageIndex ++ ;
-            state.followPostList = state.followPostList.concat(data);
+        deleteHotPostCommentByCommentId(state, commentId) {
+            let flag = false;
+            for (let i = 0; i < state.hotPostList.length; i ++ ) {
+                if (flag) break;
+                for (let j = 0; j < state.hotPostList[i].PostCommentList.length; j ++ ) {
+                    if (state.hotPostList[i].PostCommentList[j].Id == commentId) {
+                        state.hotPostList[i].PostCommentList.splice(j, 1);
+                        state.hotPostList[i].CommentCount -- ;
+                        flag = true;
+                        break;
+                    }
+                }
+            }
         },
-        
+        updateHotPostCommentReplyCountByRootCommentId(state, rootCommentId) {
+            let flag = false;
+            for (let i = 0; i < state.myPostList.length; i ++ ) {
+                if (flag) break;
+                for (let j = 0; j < state.hotPostList[i].PostCommentList.length; j ++ ) {
+                    if (state.hotPostList[i].PostCommentList[j].Id == rootCommentId) {
+                        state.hotPostList[i].PostCommentList[j].ReplyCount ++ ;
+                        flag = true;
+                        break;
+                    }
+                }
+            }
+        },
 
 
         addMyPostList(state, data) {

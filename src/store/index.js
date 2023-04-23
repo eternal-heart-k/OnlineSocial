@@ -6,6 +6,7 @@ import ModulePost from './post';
 import ModuleComment from './comment';
 import { ElMessage } from 'element-plus';
 import ModuleMessage from './message';
+import ModuleFeedback from './feedback';
 
 export default createStore({
   state: {
@@ -40,7 +41,7 @@ export default createStore({
       }
       data.func();
     },
-    setWebSocket(context) {
+    setWebSocket(context, data) {
       context.commit("setNewWebSocket");
       context.rootState.socket.onmessage = function(data) {
         let message = JSON.parse(data.data);
@@ -50,9 +51,7 @@ export default createStore({
           }
           context.commit("addGetMessageUIdSet", message.UId);
           if (message.Type == 2 || message.Type == "Chat") { // 聊天
-            console.log("chat");
             if (message.SendUserId == context.rootState.message.currentChatUserId) { // 刚好是当前聊天对象发的
-              console.log("currentchatuser");
               // 聊天框加入消息
               context.commit("addChatMessageList", {
                 SendUserId: message.SendUserId,
@@ -78,9 +77,34 @@ export default createStore({
                 CreationTime: message.CreationTime
               });
             }
+          } else if (message.Type == 0 || message.Type == "LikePost" || message.Type == 1 || message.Type == "LikeComment") { // 点赞帖子/点赞评论
+            context.commit("addNewMessageNotify", {
+              Index: 1,
+              Message: {
+                ...message,
+                HasRead: false
+              }
+            });
+          } else if (message.Type == 3 || message.Type == "CommentPost" || message.Type == 4 || message.Type == "CommentComment") { // 评论帖子/评论评论
+            context.commit("addNewMessageNotify", {
+              Index: 0,
+              Message: {
+                ...message,
+                HasRead: false
+              }
+            });
+          } else if (message.Type == 5 || message.Type == "Other") { // 其他通知
+            context.commit("addNewMessageNotify", {
+              Index: 2,
+              Message: {
+                ...message,
+                HasRead: false
+              }
+            });
           }
         }
       };
+      data.success();
     }
   },
   modules: {
@@ -90,5 +114,6 @@ export default createStore({
     post: ModulePost,
     comment: ModuleComment,
     message: ModuleMessage,
+    feedback: ModuleFeedback,
   }
 })

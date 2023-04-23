@@ -67,7 +67,7 @@
                         </svg>
                         <div class="flex-center post-footer-comment-count">{{ post.CommentCount }}</div>
                     </div>
-                    <div class="flex-box flex-center post-like btn hover-orange post-footer-like" :class="{orange:post.IsLiked}" @click="likePost(postIndex, post.IsLiked, post.Id)">
+                    <div class="flex-box flex-center post-like btn hover-orange post-footer-like" :class="{orange:post.IsLiked}" @click="likePost(postIndex, post.IsLiked, post.Id, post.UserId)">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-up" viewBox="0 0 16 16">
                             <path d="M8.864.046C7.908-.193 7.02.53 6.956 1.466c-.072 1.051-.23 2.016-.428 2.59-.125.36-.479 1.013-1.04 1.639-.557.623-1.282 1.178-2.131 1.41C2.685 7.288 2 7.87 2 8.72v4.001c0 .845.682 1.464 1.448 1.545 1.07.114 1.564.415 2.068.723l.048.03c.272.165.578.348.97.484.397.136.861.217 1.466.217h3.5c.937 0 1.599-.477 1.934-1.064a1.86 1.86 0 0 0 .254-.912c0-.152-.023-.312-.077-.464.201-.263.38-.578.488-.901.11-.33.172-.762.004-1.149.069-.13.12-.269.159-.403.077-.27.113-.568.113-.857 0-.288-.036-.585-.113-.856a2.144 2.144 0 0 0-.138-.362 1.9 1.9 0 0 0 .234-1.734c-.206-.592-.682-1.1-1.2-1.272-.847-.282-1.803-.276-2.516-.211a9.84 9.84 0 0 0-.443.05 9.365 9.365 0 0 0-.062-4.509A1.38 1.38 0 0 0 9.125.111L8.864.046zM11.5 14.721H8c-.51 0-.863-.069-1.14-.164-.281-.097-.506-.228-.776-.393l-.04-.024c-.555-.339-1.198-.731-2.49-.868-.333-.036-.554-.29-.554-.55V8.72c0-.254.226-.543.62-.65 1.095-.3 1.977-.996 2.614-1.708.635-.71 1.064-1.475 1.238-1.978.243-.7.407-1.768.482-2.85.025-.362.36-.594.667-.518l.262.066c.16.04.258.143.288.255a8.34 8.34 0 0 1-.145 4.725.5.5 0 0 0 .595.644l.003-.001.014-.003.058-.014a8.908 8.908 0 0 1 1.036-.157c.663-.06 1.457-.054 2.11.164.175.058.45.3.57.65.107.308.087.67-.266 1.022l-.353.353.353.354c.043.043.105.141.154.315.048.167.075.37.075.581 0 .212-.027.414-.075.582-.05.174-.111.272-.154.315l-.353.353.353.354c.047.047.109.177.005.488a2.224 2.224 0 0 1-.505.805l-.353.353.353.354c.006.005.041.05.041.17a.866.866 0 0 1-.121.416c-.165.288-.503.56-1.066.56z"/>
                         </svg>
@@ -112,7 +112,7 @@
                                     class="comment-top-btn" 
                                     type="primary" 
                                     size="default" 
-                                    @click="commentPost(postIndex, post.NowCommentContent, post.Id)"
+                                    @click="commentPost(postIndex, post.NowCommentContent, post.Id, post.UserId)"
                                     v-loading.fullscreen.lock="commentPostLoading"
                                     :round="true"
                                 >
@@ -166,13 +166,13 @@
                                                 <Delete />
                                             </el-icon>
                                         </div>
-                                        <div class="comment-single-comment btn hover-orange gray" @click="commentComment(postComment.Id, postComment.UserName, postIndex, postCommentIndex)">
+                                        <div class="comment-single-comment btn hover-orange gray" @click="commentComment(postComment.Id, postComment.UserName, postIndex, postCommentIndex, postComment.UserId)">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-square-text" viewBox="0 0 16 16">
                                                 <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-2.5a2 2 0 0 0-1.6.8L8 14.333 6.1 11.8a2 2 0 0 0-1.6-.8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2.5a1 1 0 0 1 .8.4l1.9 2.533a1 1 0 0 0 1.6 0l1.9-2.533a1 1 0 0 1 .8-.4H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
                                                 <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
                                             </svg>
                                         </div>
-                                        <div class="comment-single-like btn hover-orange gray" :class="{orange: postComment.IsLiked}" @click="likeComment(postIndex, postCommentIndex, postComment.Id, postComment.IsLiked)">
+                                        <div class="comment-single-like btn hover-orange gray" :class="{orange: postComment.IsLiked}" @click="likeComment(postIndex, postCommentIndex, postComment.Id, postComment.IsLiked, postComment.UserId)">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-up" viewBox="0 0 16 16">
                                                 <path d="M8.864.046C7.908-.193 7.02.53 6.956 1.466c-.072 1.051-.23 2.016-.428 2.59-.125.36-.479 1.013-1.04 1.639-.557.623-1.282 1.178-2.131 1.41C2.685 7.288 2 7.87 2 8.72v4.001c0 .845.682 1.464 1.448 1.545 1.07.114 1.564.415 2.068.723l.048.03c.272.165.578.348.97.484.397.136.861.217 1.466.217h3.5c.937 0 1.599-.477 1.934-1.064a1.86 1.86 0 0 0 .254-.912c0-.152-.023-.312-.077-.464.201-.263.38-.578.488-.901.11-.33.172-.762.004-1.149.069-.13.12-.269.159-.403.077-.27.113-.568.113-.857 0-.288-.036-.585-.113-.856a2.144 2.144 0 0 0-.138-.362 1.9 1.9 0 0 0 .234-1.734c-.206-.592-.682-1.1-1.2-1.272-.847-.282-1.803-.276-2.516-.211a9.84 9.84 0 0 0-.443.05 9.365 9.365 0 0 0-.062-4.509A1.38 1.38 0 0 0 9.125.111L8.864.046zM11.5 14.721H8c-.51 0-.863-.069-1.14-.164-.281-.097-.506-.228-.776-.393l-.04-.024c-.555-.339-1.198-.731-2.49-.868-.333-.036-.554-.29-.554-.55V8.72c0-.254.226-.543.62-.65 1.095-.3 1.977-.996 2.614-1.708.635-.71 1.064-1.475 1.238-1.978.243-.7.407-1.768.482-2.85.025-.362.36-.594.667-.518l.262.066c.16.04.258.143.288.255a8.34 8.34 0 0 1-.145 4.725.5.5 0 0 0 .595.644l.003-.001.014-.003.058-.014a8.908 8.908 0 0 1 1.036-.157c.663-.06 1.457-.054 2.11.164.175.058.45.3.57.65.107.308.087.67-.266 1.022l-.353.353.353.354c.043.043.105.141.154.315.048.167.075.37.075.581 0 .212-.027.414-.075.582-.05.174-.111.272-.154.315l-.353.353.353.354c.047.047.109.177.005.488a2.224 2.224 0 0 1-.505.805l-.353.353.353.354c.006.005.041.05.041.17a.866.866 0 0 1-.121.416c-.165.288-.503.56-1.066.56z"/>
                                             </svg>
@@ -197,13 +197,16 @@
     <p class="load-text load-text-margin-top-more" v-if="noMore">没有更多内容了~</p>
     <CommentReplyForm 
         :userName="commentReplyUserName"
+        :userId="commentReplyUserId"
         :commentId="commentReplyId"
         :commentRootId="commentReplyRootId"
         :postIndex="commentReplyPostIndex"
         :postCommentIndex="commentReplyPostCommentIndex"
+        :pageType="0"
     />
     <SubCommentInfo 
         :postComment="subCommentInfoList"
+        :pageType="0"
     />
 </template>
 
@@ -225,7 +228,13 @@ export default {
         SubCommentInfo,
         CaretBottom,
     },
-    setup() {
+    props: {
+        isFollowedUserPost: {
+            type: Boolean,
+            default: false,
+        }
+    },
+    setup(props) {
         const store = useStore();
         const contentCountLimit = ref(150);
         let postList = computed({
@@ -292,7 +301,13 @@ export default {
             }
             return (count / 10000).toFixed(1) + "万";
         };
-        const likePost = (postIndex, status, postId) => {
+        const getGuid = () => {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+                return v.toString(16);
+            });
+        };
+        const likePost = (postIndex, status, postId, postUserId) => {
             let param = {
                 Type: 0,
                 UserId: store.state.user.userId,
@@ -305,9 +320,36 @@ export default {
                         PostIndex: postIndex,
                         Status: status
                     });
+                    if (status || store.state.user.userId == postUserId) return ;
+                    let newGuid = getGuid();
+                    while (store.state.message.messageUIdSet.has(newGuid)) {
+                        newGuid = getGuid();
+                    }
+                    store.commit("addMessageUIdSet", newGuid);
+                    let message = {
+                        UId: newGuid,
+                        Type: 0, 
+                        SendUserId: store.state.user.userId, 
+                        SendUserAvatarUrl: store.state.user.avatarUrl,
+                        SendUserName: store.state.user.userName,
+                        ReceiveUserId: postUserId, 
+                        Content: "点赞了你的帖子",
+                        TargetId: postId
+                    };
+                    if (store.state.socket.readyState === 1) {
+                        store.state.socket.send(JSON.stringify(message));
+                    } else if (store.state.socket.readyState === 0) {
+                        setTimeout(() => store.state.socket.send(JSON.stringify(message)), 2000);
+                    } else {
+                        store.dispatch("setWebSocket", {
+                            success() {
+                                setTimeout(() => store.state.socket.send(JSON.stringify(message)), 2000);
+                            }
+                        });
+                    }
                 },
                 error(message) {
-                    alert(message);
+                    ElMessage.error(message);
                 }
             }
             if (status) {
@@ -367,8 +409,8 @@ export default {
             store.commit("clearNowImagePreview");
             openScroll();
         };
-        let loading = ref(false);
-        let noMore = ref(false);
+        let loading = computed(() => store.state.post.hotPostLoading);
+        let noMore = computed(() => store.state.post.hotPostNoMore);
         let scrollDisabled = computed(() => loading.value || noMore.value);
         let rangeType = computed({
             get() {
@@ -381,7 +423,7 @@ export default {
             if (!store.state.user.isLogin) {
                 return ;
             }
-            loading.value = true;
+            store.commit("updateHotPostLoading", true);
             store.dispatch("getPostList", {
                 param: {
                     MyUserId: store.state.user.userId,
@@ -389,28 +431,58 @@ export default {
                     PostOrderType: 0,
                     CommentOrderType: 0,
                     RangeType: rangeType.value,
-                    IsRead: true
+                    IsRead: true,
+                    IsFollowedUserPost: props.isFollowedUserPost
                 },
                 success(result) {
-                    loading.value = false;
+                    store.commit("updateHotPostLoading", false);
                     if (result.Items.length == 0) {
-                        noMore.value = true;
+                        store.commit("updateHotPostNoMore", true);
                     } else {
                         store.commit("addHotPostList", result.Items);
                     }
                 },
                 error(message) {
-                    loading.value = false;
-                    alert(message);
+                    store.commit("updateHotPostLoading", false);
+                    ElMessage.error(message);
                 }
             });
+        };
+        const sendMessageWithCommentPost = (postUserId, content, postId) => {
+            if (store.state.user.userId == postUserId) return ;
+            let newGuid = getGuid();
+            while (store.state.message.messageUIdSet.has(newGuid)) {
+                newGuid = getGuid();
+            }
+            store.commit("addMessageUIdSet", newGuid);
+            let message = {
+                UId: newGuid,
+                Type: 3, 
+                SendUserId: store.state.user.userId, 
+                SendUserAvatarUrl: store.state.user.avatarUrl,
+                SendUserName: store.state.user.userName,
+                ReceiveUserId: postUserId, 
+                Content: "评论了你的帖子：" + content,
+                TargetId: postId
+            };
+            if (store.state.socket.readyState === 1) {
+                store.state.socket.send(JSON.stringify(message));
+            } else if (store.state.socket.readyState === 0) {
+                setTimeout(() => store.state.socket.send(JSON.stringify(message)), 2000);
+            } else {
+                store.dispatch("setWebSocket", {
+                    success() {
+                        setTimeout(() => store.state.socket.send(JSON.stringify(message)), 2000);
+                    }
+                });
+            }
         };
         const commentPostShow = (index) => {
             postList.value[index].CommentPostVisible = !postList.value[index].CommentPostVisible;
         };
-        const commentPost = (index, content, postId) => {
+        const commentPost = (index, content, postId, postUserId) => {
             if (content == "" && postList.value[index].CommentPostImage == null) {
-                alert("评论内容不能为空");
+                ElMessage.error("评论内容不能为空");
                 return ;
             }
             commentPostLoading.value = true;
@@ -435,6 +507,7 @@ export default {
                                     message: "评论成功",
                                     type: 'success',
                                 });
+                                sendMessageWithCommentPost(postUserId, content, postId);
                             },
                             error(message) {
                                 ElMessage.error(message);
@@ -462,6 +535,7 @@ export default {
                             message: "评论成功",
                             type: 'success',
                         });
+                        sendMessageWithCommentPost(postUserId, content, postId);
                     },
                     error(message) {
                         ElMessage.error(message);
@@ -485,19 +559,21 @@ export default {
             postList.value[index].CommentPostImagePre = null;
         };
         let commentReplyUserName = ref("");
+        let commentReplyUserId = ref("");
         let commentReplyId = ref(0);
         let commentReplyRootId = ref(0);
         let commentReplyPostIndex = ref(-1);
         let commentReplyPostCommentIndex = ref(-1);
-        const commentComment = (commentId, userName, postIndex, postCommentIndex) => {
+        const commentComment = (commentId, userName, postIndex, postCommentIndex, postCommentUserId) => {
             store.commit("updatePostCommentCommentVisible", true);
+            commentReplyUserId.value = postCommentUserId;
             commentReplyUserName.value = "回复@" + userName;
             commentReplyId.value = commentId;
             commentReplyRootId.value = commentId;
             commentReplyPostIndex.value = postIndex;
             commentReplyPostCommentIndex.value = postCommentIndex;
         };
-        const likeComment = (postIndex, postCommentIndex, commentId, status) => {
+        const likeComment = (postIndex, postCommentIndex, commentId, status, commentUserId) => {
             let param = {
                 Type: 1,
                 UserId: store.state.user.userId,
@@ -511,9 +587,36 @@ export default {
                         PostCommentIndex: postCommentIndex,
                         Status: status
                     });
+                    if (status || store.state.user.userId == commentUserId) return ;
+                    let newGuid = getGuid();
+                    while (store.state.message.messageUIdSet.has(newGuid)) {
+                        newGuid = getGuid();
+                    }
+                    store.commit("addMessageUIdSet", newGuid);
+                    let message = {
+                        UId: newGuid,
+                        Type: 1, 
+                        SendUserId: store.state.user.userId, 
+                        SendUserAvatarUrl: store.state.user.avatarUrl,
+                        SendUserName: store.state.user.userName,
+                        ReceiveUserId: commentUserId, 
+                        Content: "点赞了你的评论",
+                        TargetId: commentId
+                    };
+                    if (store.state.socket.readyState === 1) {
+                        store.state.socket.send(JSON.stringify(message));
+                    } else if (store.state.socket.readyState === 0) {
+                        setTimeout(() => store.state.socket.send(JSON.stringify(message)), 2000);
+                    } else {
+                        store.dispatch("setWebSocket", {
+                            success() {
+                                setTimeout(() => store.state.socket.send(JSON.stringify(message)), 2000);
+                            }
+                        });
+                    }
                 },
                 error(message) {
-                    alert(message);
+                    ElMessage.error(message);
                 }
             }
             if (status) {
@@ -601,7 +704,7 @@ export default {
                     TargetId: postId,
                     OrderType: store.state.post.hotPostList[postIndex].CommentOrderType,
                     MyUserId: store.state.user.userId,
-                    PageIndex: store.state.post.hotPostList[postIndex].PostCommentPageIndex
+                    PageIndex: store.state.post.hotPostList[postIndex].PostCommentPageIndex,
                 },
                 success(result) {
                     store.commit("updateHotPostCommentLoading", {
@@ -747,6 +850,7 @@ export default {
             scrollDisabled,
             commentPostLoading,
             commentReplyUserName,
+            commentReplyUserId,
             commentReplyId,
             commentReplyRootId,
             commentReplyPostIndex,

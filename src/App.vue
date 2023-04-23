@@ -12,6 +12,7 @@
   <PostEdit />
   <ImagePreview />
   <AddFollowShowGroup />
+  <FeedbackShow />
 </template>
 
 <script>
@@ -21,6 +22,8 @@ import router from '@/router/index';
 import PostEdit from './components/post/PostEdit.vue';
 import ImagePreview from './components/ImagePreview';
 import AddFollowShowGroup from './components/follow/AddFollowShowGroup.vue';
+import { ElMessage } from 'element-plus';
+import FeedbackShow from './components/FeedbackShow.vue';
 
 export default {
   name: "App",
@@ -29,6 +32,7 @@ export default {
     PostEdit,
     ImagePreview,
     AddFollowShowGroup,
+    FeedbackShow,
   },
   mounted() {
     const store = useStore();
@@ -45,10 +49,41 @@ export default {
         RefreshToken: refreshTokenOfUrl,
         success() {
           router.push({name: "home", path: "/onlinesocial"});
-          store.dispatch("setWebSocket");
+          store.dispatch("setWebSocket", {
+            success() {
+            }
+          });
           setInterval(() => {
-            store.dispatch("setWebSocket");
+            store.dispatch("setWebSocket", {
+              success() {
+              }
+            });
           }, 50 * 1000);
+          store.dispatch("refreshMessagePage");
+          if (store.state.user.isAdmin) { // 是管理员，其他消息是收到的反馈列表
+            store.dispatch("getFeedbackNotReadCount", {
+              success(result) {
+                store.commit("setFeedbackNotReadCount", result);
+              },
+              error(message) {
+                ElMessage.error(message);
+              }
+            });
+            store.dispatch("getFeedbackList", {
+              param: {
+                PageIndex: 1,
+                PageSize: 20,
+                IsForAdmin: true
+              },
+              success(result) {
+                result["SelectType"] = null;
+                store.commit("refreshFeedbackList", result);
+              },
+              error(message) {
+                ElMessage.error(message);
+              }
+            });
+          }
         },
       });
       return;
@@ -66,13 +101,44 @@ export default {
       store.dispatch("getUserInfoByUserId", {
         async: false,
         success() {
-          store.dispatch("setWebSocket");
+          store.dispatch("setWebSocket", {
+            success() {
+            }
+          });
           setInterval(() => {
-            store.dispatch("setWebSocket");
+            store.dispatch("setWebSocket", {
+              success() {
+              }
+            });
           }, 50 * 1000);
+          store.dispatch("refreshMessagePage");
+          if (store.state.user.isAdmin) { // 是管理员，其他消息是收到的反馈列表
+            store.dispatch("getFeedbackNotReadCount", {
+              success(result) {
+                store.commit("setFeedbackNotReadCount", result);
+              },
+              error(message) {
+                ElMessage.error(message);
+              }
+            });
+            store.dispatch("getFeedbackList", {
+              param: {
+                PageIndex: 1,
+                PageSize: 20,
+                IsForAdmin: true
+              },
+              success(result) {
+                result["SelectType"] = null;
+                store.commit("refreshFeedbackList", result);
+              },
+              error(message) {
+                ElMessage.error(message);
+              }
+            });
+          }
         },
         error(message) {
-          alert(message);
+          ElMessage.error(message);
         }
       });
     }
