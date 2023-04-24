@@ -364,7 +364,7 @@ export default {
                     UserId: store.state.user.userId,
                     PageIndex: store.state.post.myPageIndex,
                     PostOrderType: 1,
-                    CommentOrderType: 0  // todo
+                    CommentOrderType: 0
                 },
                 success(result) {
                     loading.value = false;
@@ -376,7 +376,7 @@ export default {
                 },
                 error(message) {
                     loading.value = false;
-                    alert(message);
+                    ElMessage.error(message);
                 }
             });
         };
@@ -385,7 +385,7 @@ export default {
         };
         const commentPost = (index, content, postId) => {
             if (content == "" && postList.value[index].CommentPostImage == null) {
-                alert("评论内容不能为空");
+                ElMessage.error("评论内容不能为空");
                 return ;
             }
             commentPostLoading.value = true;

@@ -17,10 +17,15 @@ const ModulePost = {
         myPostList: [],
         myPageIndex: 1,
         myTotalCount: 0,
+
+        searchContent: "",
     },
     getters: {
     },
     mutations: {
+        updateSearchContent(state, data) {
+            state.searchContent = data;
+        },
         updatePostEditShow(state, status) {
             state.postEditShow = status;
         },
@@ -383,6 +388,28 @@ const ModulePost = {
             }
             $.ajax({
                 url: context.rootState.urlPre + "/api/user/hot/page",
+                type: "post",
+                headers: {
+                    'Authorization': "Bearer " + context.rootState.user.accessToken,
+                },
+                data: JSON.stringify(data.param),
+                contentType: "application/json",
+                success(resp) {
+                    if (resp.IsSuccess) {
+                        data.success(resp.Result);
+                    } else {
+                        data.error(resp.Message);
+                    }
+                }
+            });
+        },
+        getSearchUserList(context, data) {
+            if (!context.rootState.user.isLogin) {
+                ElMessage.error("暂未登录，请先登录");
+                return;
+            }
+            $.ajax({
+                url: context.rootState.urlPre + "/api/user/search/page",
                 type: "post",
                 headers: {
                     'Authorization': "Bearer " + context.rootState.user.accessToken,

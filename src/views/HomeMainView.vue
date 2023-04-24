@@ -34,7 +34,7 @@
                 <el-card shadow="always" class="hot-post-right">
                     <div class="hot-user">
                         <div class="hot-user-top">
-                            热门用户
+                            {{ hotUserTopText }}
                         </div>
                         <div class="hot-user-list">
                             <div 
@@ -110,6 +110,16 @@ export default {
     },
     setup() {
         const store = useStore();
+        let hotUserTopText = computed({
+            get() {
+                if (store.state.post.searchContent == "") {
+                    return "热门用户";
+                }
+                return "相关用户";
+            },
+            set() {
+            }
+        });
         let rangeType = computed({
             get() {
                 return store.state.post.hotRangeType;
@@ -197,7 +207,7 @@ export default {
             }
         };
         const hotUserPageChanged = () => {
-            store.dispatch("getHotUserList", {
+            let data = {
                 param: {
                     PageIndex: currentPageIndex.value,
                     MyUserId: store.state.user.userId,
@@ -209,7 +219,13 @@ export default {
                 error(message) {
                     ElMessage.error(message);
                 }
-            });
+            };
+            if (store.state.post.searchContent != "") {
+                data.param["Content"] = store.state.post.searchContent;
+                store.dispatch("getSearchUserList", data);
+            } else {
+                store.dispatch("getHotUserList", data);
+            }
         };
         const myUserId = ref(store.state.user.userId);
         return {
@@ -220,6 +236,7 @@ export default {
             hotUserInfos,
             totalCount,
             myUserId,
+            hotUserTopText,
             changeHotPostRangeType,
             changeHotUserFollowStatus,
             hotUserPageChanged,

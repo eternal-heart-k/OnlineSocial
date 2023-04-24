@@ -432,7 +432,8 @@ export default {
                     CommentOrderType: 0,
                     RangeType: rangeType.value,
                     IsRead: true,
-                    IsFollowedUserPost: props.isFollowedUserPost
+                    IsFollowedUserPost: props.isFollowedUserPost,
+                    Content: store.state.post.searchContent
                 },
                 success(result) {
                     store.commit("updateHotPostLoading", false);

@@ -2,7 +2,7 @@
   <el-row class="all-in">
     <el-col :span="6">
       <div class="center left">
-        <el-input class="serch-input" placeholder="搜索动态或用户" v-model="searchContent" @keyup.enter="search" :prefix-icon="Search"/>
+        <el-input clearable class="serch-input" placeholder="搜索动态或用户" v-model="searchContent" @keyup.enter="search" :prefix-icon="Search"/>
       </div>
     </el-col>
     <el-col :span="12">
@@ -59,11 +59,12 @@
 
 <script>
 import { Message, Edit, Promotion } from "@element-plus/icons";
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useStore } from 'vuex';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import $ from 'jquery';
 import { Search } from '@element-plus/icons-vue';
+import router from '../router';
 
 export default {
   name: "HomeHeaderView",
@@ -74,14 +75,58 @@ export default {
   },
   setup() {
     const store = useStore();
-    let searchContent = ref('');
+    let searchContent = ref("");
     let avatarUrl = computed(() => store.state.user.avatarUrl);
     let isLogin = computed(() => store.state.user.isLogin);
     const search = () => {
+      if (!store.state.user.isLogin) {
+        ElMessage.error("暂未登录，请先登录");
+        return;
+      }
       if (searchContent.value == "") {
         return;
       }
-      alert(searchContent.value);
+      router.push({name: "hot"});
+      store.commit("updateSearchContent", searchContent.value);
+      store.commit("clearHotPostList");
+      store.commit("updateHotPostLoading", true);
+      store.dispatch("getPostList", {
+        param: {
+          MyUserId: store.state.user.userId,
+          PageIndex: 1,
+          PostOrderType: 0,
+          CommentOrderType: 0,
+          RangeType: store.state.post.hotRangeType,
+          IsRead: true,
+          Content: searchContent.value
+        },
+        success(result) {
+          store.commit("updateHotPostLoading", false);
+          if (result.Items.length == 0) {
+            store.commit("updateHotPostNoMore", true);
+          } else {
+            store.commit("refreshHotPostList", result.Items);
+          }
+        },
+        error(message) {
+          store.commit("updateHotPostLoading", false);
+          ElMessage.error(message);
+        }
+      });
+      store.dispatch("getSearchUserList", {
+        param: {
+          PageIndex: 1,
+          PageSize: 5,
+          MyUserId: store.state.user.userId,
+          Content: searchContent.value
+        },
+        success(result) {
+          store.commit("refreshHotUserList", result);
+        },
+        error(message) {
+          ElMessage.error(message);
+        }
+      });
     };
     const ShowEditPost = () => {
       if (!store.state.user.isLogin) {
@@ -122,6 +167,11 @@ export default {
       $(".login_module").show();
     };
     const goToHotPage = (isFollowedUserPost) => {
+      if (!store.state.user.isLogin) {
+        ElMessage.error("暂未登录，请先登录");
+        return;
+      }
+      store.commit("updateSearchContent", "");
       store.commit("updateHotPostLoading", true);
       store.commit("updateHotPostNoMore", false);
       store.commit("clearHotPostList");
@@ -144,6 +194,19 @@ export default {
         },
         error(message) {
           store.commit("updateHotPostLoading", false);
+          ElMessage.error(message);
+        }
+      });
+      store.dispatch("getHotUserList", {
+        param: {
+          PageIndex: 1,
+          PageSize: 5,
+          MyUserId: store.state.user.userId
+        },
+        success(result) {
+          store.commit("refreshHotUserList", result);
+        },
+        error(message) {
           ElMessage.error(message);
         }
       });
