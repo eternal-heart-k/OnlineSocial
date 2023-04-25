@@ -117,57 +117,62 @@ export default {
         };
         const sendMessage = () => {
             if (newMessageText.value.trim() !== "") {
+                let newGuid = getGuid();
+                while (store.state.message.messageUIdSet.has(newGuid)) {
+                    newGuid = getGuid();
+                }
+                store.commit("addMessageUIdSet", newGuid);
+                let message = {
+                    UId: newGuid,
+                    Type: 2, 
+                    SendUserId: myUserId.value, 
+                    SendUserAvatarUrl: store.state.user.avatarUrl,
+                    SendUserName: store.state.user.userName,
+                    ReceiveUserId: chatUserId.value, 
+                    Content: newMessageText.value
+                };
                 if (store.state.socket.readyState === 1) {
-                    let newGuid = getGuid();
-                    while (store.state.message.messageUIdSet.has(newGuid)) {
-                        newGuid = getGuid();
-                    }
-                    store.commit("addMessageUIdSet", newGuid);
-                    let message = {
-                        UId: newGuid,
-                        Type: 2, 
-                        SendUserId: myUserId.value, 
-                        SendUserAvatarUrl: store.state.user.avatarUrl,
-                        SendUserName: store.state.user.userName,
-                        ReceiveUserId: chatUserId.value, 
-                        Content: newMessageText.value
-                    };
                     store.state.socket.send(JSON.stringify(message));
-                    store.commit("addChatMessageList", {
-                        SendUserId: message.SendUserId,
-                        ReceiveUserId: message.ReceiveUserId,
-                        HasRead: false,
-                        Content: message.Content,
-                        CreationTime: new Date()
-                    });
-                    newMessageText.value = '';
-                    chatScrollToTop();
-                    store.dispatch("updateUserChatReadStatus", {
-                        param: {
-                            SendUserId: message.ReceiveUserId,
-                            ReceiveUserId: message.SendUserId,
-                        },
-                        success() {
-                            store.commit("clearChatUserNotReadCount", chatUserId.value);
-                        },
-                        error(message) {
-                            ElMessage.error(message);
-                        }
-                    });
-                    store.commit("sendMessageUpdateChatUserContent", {
-                        UserId: message.ReceiveUserId,
-                        CreationTime: new Date(),
-                        Content: message.Content,
-                    });
+                    store.state.socket.send(JSON.stringify(message));
                 } else if (store.state.socket.readyState === 0) {
-                    ElMessage.error("请求频繁，请稍后重试");
+                    setTimeout(() => {
+                        store.state.socket.send(JSON.stringify(message));
+                    }, 1000);
                 } else {
                     store.dispatch("setWebSocket", {
                         success() {
-                            setTimeout(() => sendMessage(), 1000);
+                            setTimeout(() => {
+                                store.state.socket.send(JSON.stringify(message));
+                            }, 1000);
                         }
                     });
                 }
+                store.commit("addChatMessageList", {
+                    SendUserId: message.SendUserId,
+                    ReceiveUserId: message.ReceiveUserId,
+                    HasRead: false,
+                    Content: message.Content,
+                    CreationTime: new Date()
+                });
+                newMessageText.value = '';
+                chatScrollToTop();
+                store.dispatch("updateUserChatReadStatus", {
+                    param: {
+                        SendUserId: message.ReceiveUserId,
+                        ReceiveUserId: message.SendUserId,
+                    },
+                    success() {
+                        store.commit("clearChatUserNotReadCount", chatUserId.value);
+                    },
+                    error(message) {
+                        ElMessage.error(message);
+                    }
+                });
+                store.commit("sendMessageUpdateChatUserContent", {
+                    UserId: message.ReceiveUserId,
+                    CreationTime: new Date(),
+                    Content: message.Content,
+                });
             }
         };
         const chatTimeFormat = (chatTime) => {
@@ -208,6 +213,7 @@ export default {
                         ReceiveUserId: myUserId.value,
                     },
                     success() {
+                        chatScrollToTop();
                         store.commit("clearChatUserNotReadCount", chatUserId.value);
                     },
                     error(message) {

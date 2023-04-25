@@ -8,43 +8,43 @@ import NotFoundView from '@/views/NotFoundView.vue';
 
 const routes = [
     {
-        path: '/onlinesocial',
+        path: '/onlinesocial/',
         name: 'home',
         component: HomeView
     },
     {
-        path: '/onlinesocial/login',
+        path: '/onlinesocial/login/',
         name: 'login',
         component: LoginView
     },
     {
-        path: '/onlinesocial/user/profile',
+        path: '/onlinesocial/user/profile/',
         name: 'userProfile',
         component: UserProfileView
     },
     {
-        path: '/onlinesocial/hot',
+        path: '/onlinesocial/hot/',
         name: 'hot',
         component: HomeView
     },
     {
-        path: '/onlinesocial/myfollow',
+        path: '/onlinesocial/myfollow/',
         name: 'myFollow',
         component: MyFollowView
     },
     {
-        path: '/onlinesocial/message',
+        path: '/onlinesocial/message/',
         name: 'message',
         component: MessageView
     },
     {
-        path: '/onlinesocial/404',
+        path: '/onlinesocial/404/',
         name: '404',
         component: NotFoundView
     },
     {
         path: '/onlinesocial/:catchAll(.*)',
-        redirect: '/onlinesocial/404'
+        redirect: '/onlinesocial/404/'
     }
 ];
 

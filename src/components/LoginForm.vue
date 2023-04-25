@@ -52,6 +52,7 @@ import { ref } from 'vue';
 import { useStore } from 'vuex';
 import router from '@/router/index';
 import md5 from 'js-md5';
+import { ElMessage } from 'element-plus';
 
 export default {
     name: "LoginForm",
@@ -90,16 +91,18 @@ export default {
             login_verification_code.value = "";
         };
         const verificationCodeType = () => {
-            login_user_type.value = 2;
-            $('.login_verification_code>input')[0].setAttribute("required", "required");
-            $('.login_password>input').removeAttr("required");
-            $('.login_password').hide();
-            $('.login_verification_code_module').show();
-            $('.account_type').css("border-bottom", "none");
-            $('.verification_code_type').css("border-bottom", "3px solid #66afe9");
-            login_phone_number.value = "";
-            login_password.value = "";
-            login_verification_code.value = "";
+            ElMessage.error("正在加速开发中...");
+            return;
+            // login_user_type.value = 2;
+            // $('.login_verification_code>input')[0].setAttribute("required", "required");
+            // $('.login_password>input').removeAttr("required");
+            // $('.login_password').hide();
+            // $('.login_verification_code_module').show();
+            // $('.account_type').css("border-bottom", "none");
+            // $('.verification_code_type').css("border-bottom", "3px solid #66afe9");
+            // login_phone_number.value = "";
+            // login_password.value = "";
+            // login_verification_code.value = "";
         };
         const getVerificationCode = () => {
             let tm = 60;
@@ -126,11 +129,13 @@ export default {
             login_verification_code.value = "";
         };
         const register = () => {
-            $('.login_form').hide();
-            $(".register_form").show();
-            login_phone_number.value = "";
-            login_password.value = "";
-            login_verification_code.value = "";
+            ElMessage.error("正在加速开发中...");
+            return;
+            // $('.login_form').hide();
+            // $(".register_form").show();
+            // login_phone_number.value = "";
+            // login_password.value = "";
+            // login_verification_code.value = "";
         };
         const login = () => {
             error_message.value = "";
@@ -180,7 +185,6 @@ export default {
             store.dispatch("getLoginWithQQUrl");
         };
         const loginWithVerificationCode = () => {
-            alert("正在加速开发中...");
             login_text.value = "登录";
             return;
 
