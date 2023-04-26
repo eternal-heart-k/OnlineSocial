@@ -298,24 +298,6 @@ const ModuleMessage = {
                 });
             }
         },
-        updateMessageNotifyHasReadByInfo(context, data) {
-            $.ajax({
-                url: context.rootState.urlPre + '/api/notification/by/info',
-                type: "put",
-                headers: {
-                    'Authorization': "Bearer " + context.rootState.user.accessToken,
-                },
-                data: JSON.stringify(data.param),
-                contentType: "application/json",
-                success(resp) {
-                    if (resp.IsSuccess) {
-                        data.success();
-                    } else {
-                        data.error(resp.Message);
-                    }
-                }
-            });
-        }
     },
     modules: {
     }

@@ -39,8 +39,7 @@
             v-model="newMessageText" 
             @keydown.shift.enter.exact.prevent="addNewLine"
             @keydown.enter.exact.prevent="sendMessage"
-            @focus="chatInputFocusChange(true)"
-            @blur="chatInputFocusChange(false)"
+            @focus="chatInputFocus()"
         >
         </textarea>
     </div>
@@ -204,9 +203,8 @@ export default {
         watch(chatMessageList, () => {
             chatScrollToTop();
         });
-        let chatInputFocus = ref(false);
-        const chatInputFocusChange = (status) => {
-            if (status && !chatInputFocus.value && chatUserId.value) {
+        const chatInputFocus = () => {
+            if (chatUserId.value) {
                 store.dispatch("updateUserChatReadStatus", {
                     param: {
                         SendUserId: chatUserId.value,
@@ -221,7 +219,6 @@ export default {
                     }
                 });
             }
-            chatInputFocus.value = status;
         };
         let hasNotReadMessage = computed({
             get() {
@@ -240,14 +237,13 @@ export default {
             newMessageText,
             chatUserName,
             chatUserAvatarUrl,
-            chatInputFocus,
             hasNotReadMessage,
             sendMessage,
             chatTimeFormat,
             chatContentFormat,
             addNewLine,
             chatScrollToTop,
-            chatInputFocusChange,
+            chatInputFocus,
         }
     }
 };

@@ -56,8 +56,10 @@ export default createStore({
     },
     setWebSocket(context, data) {
       context.commit("setNewWebSocket");
-      context.rootState.socket.onclose = function () {
-        context.dispatch("resendSocketMessage");
+      context.rootState.socket.onclose = function (e) {
+        if (e.code == "1006" && e.reason == "") {
+          context.dispatch("resendSocketMessage");
+        }
       };
       context.rootState.socket.onmessage = function(data) {
         let message = JSON.parse(data.data);
@@ -83,7 +85,6 @@ export default createStore({
                 Content: message.Content
               });
             } else {
-              console.log("other");
               context.commit("addNewMessageButNotCurrentChatUser", {
                 UserId: message.SendUserId,
                 UserName: message.SendUserName,

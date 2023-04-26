@@ -53,7 +53,6 @@ const ModuleFollow = {
             state.selectFollowId = data.FollowId;
             state.selectFollowIndex = data.FollowIndex;
             state.selectValue = state.followGroupList.slice();
-            console.log(state.selectValue, data.FollowGroupIndex);
             state.selectValue.splice(data.FollowGroupIndex, 1);
         },
         updateDeleteFollowGroupVisible(state, status) {

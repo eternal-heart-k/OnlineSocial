@@ -32,7 +32,7 @@
                 class="comment-message-single" 
                 v-for="(commentMessage, index) of commentMessageList" 
                 :key="index"
-                @click="updateMessageHasRead(commentMessage.SendUserId, commentMessage.Type, commentMessage.TargetId, index, commentMessage.HasRead)"
+                @click="updateMessageHasRead(commentMessage.Id, index, commentMessage.HasRead)"
             >
                 <div class="comment-message-top">
                     <div class="comment-message-top-left">
@@ -162,24 +162,10 @@ export default {
         let loading = ref(false);
         let noMore = ref(false);
         let scrollDisabled = computed(() => loading.value || noMore.value);
-        const updateType = (type) => {
-            if (type == "LikePost") return 0;
-            else if (type == "LikeComment") return 1;
-            else if (type == "Chat") return 2;
-            else if (type == "CommentPost") return 3;
-            else if (type == "CommentComment") return 4;
-            else if (type == "Other") return 5;
-            return type;
-        };
-        const updateMessageHasRead = (sendUserId, type, targetId, index, status) => {
+        const updateMessageHasRead = (id, index, status) => {
             if (status) return ;
-            store.dispatch("updateMessageNotifyHasReadByInfo", {
-                param: {
-                    FromUserId: sendUserId,
-                    ToUserId: store.state.user.userId,
-                    Type: updateType(type),
-                    TargetId: targetId
-                },
+            store.dispatch("updateNotificationReadStatusById", {
+                Id: id,
                 success() {
                     store.commit("updateMessageNotifyReadStatusSingle", {
                         Index: 0,
