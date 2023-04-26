@@ -91,20 +91,19 @@ export default {
             login_verification_code.value = "";
         };
         const verificationCodeType = () => {
-            ElMessage.error("正在加速开发中...");
-            return;
-            // login_user_type.value = 2;
-            // $('.login_verification_code>input')[0].setAttribute("required", "required");
-            // $('.login_password>input').removeAttr("required");
-            // $('.login_password').hide();
-            // $('.login_verification_code_module').show();
-            // $('.account_type').css("border-bottom", "none");
-            // $('.verification_code_type').css("border-bottom", "3px solid #66afe9");
-            // login_phone_number.value = "";
-            // login_password.value = "";
-            // login_verification_code.value = "";
+            login_user_type.value = 2;
+            $('.login_verification_code>input')[0].setAttribute("required", "required");
+            $('.login_password>input').removeAttr("required");
+            $('.login_password').hide();
+            $('.login_verification_code_module').show();
+            $('.account_type').css("border-bottom", "none");
+            $('.verification_code_type').css("border-bottom", "3px solid #66afe9");
+            login_phone_number.value = "";
+            login_password.value = "";
+            login_verification_code.value = "";
         };
-        const getVerificationCode = () => {
+        const sendVerificationCodeLogin = () => {
+            ElMessage.success("已发送验证码");
             let tm = 60;
             $('.login_get_verification_code_btn').attr("disabled", true);
             $('.login_get_verification_code_btn').css("color", "grey");
@@ -121,21 +120,37 @@ export default {
                 }
             }, 1000);
         };
+        const getVerificationCode = () => {
+            error_message.value = "";
+            sendVerificationCodeLogin();
+            store.dispatch("sendVerificationCode", {
+                param: {
+                    KeyWord: login_phone_number.value,
+                    CommunicationType: 1,
+                    BusinessType: 3
+                },
+                success() {
+                },
+                error(message) {
+                    error_message.value = message;
+                }
+            });
+        };
         const forgetPassword = () => {
-            $('.login_form').hide();
-            $('.forget_password_form').show();
+            error_message.value = "";
             login_phone_number.value = "";
             login_password.value = "";
             login_verification_code.value = "";
+            $('.login_form').hide();
+            $('.forget_password_form').show();
         };
         const register = () => {
-            ElMessage.error("正在加速开发中...");
-            return;
-            // $('.login_form').hide();
-            // $(".register_form").show();
-            // login_phone_number.value = "";
-            // login_password.value = "";
-            // login_verification_code.value = "";
+            error_message.value = "";
+            login_phone_number.value = "";
+            login_password.value = "";
+            login_verification_code.value = "";
+            $('.login_form').hide();
+            $(".register_form").show();
         };
         const login = () => {
             error_message.value = "";
@@ -145,6 +160,23 @@ export default {
             } else if (login_user_type.value == 2) {
                 loginWithVerificationCode();
             }
+        };
+        const loginAfterSuccess = () => {
+            ElMessage.success("登录成功");
+            error_message.value = "";
+            login_text.value = "登录";
+            router.push({name: "home"});
+            store.dispatch("setWebSocket", {
+                success() {
+                }
+            });
+            setInterval(() => {
+                store.dispatch("setWebSocket", {
+                    success() {
+                    }
+                });
+            }, 50 * 1000);
+            store.dispatch("refreshMessagePage");
         };
         const loginWithPassword = () => {
             if (login_phone_number.value == "") {
@@ -158,20 +190,7 @@ export default {
                     Password: login_password.value == "" ? "" : md5(login_password.value),
                 },
                 success() {
-                    error_message.value = "";
-                    login_text.value = "登录";
-                    router.push({name: "home"});
-                    store.dispatch("setWebSocket", {
-                        success() {
-                        }
-                    });
-                    setInterval(() => {
-                        store.dispatch("setWebSocket", {
-                            success() {
-                            }
-                        });
-                    }, 50 * 1000);
-                    store.dispatch("refreshMessagePage");
+                    loginAfterSuccess();
                 },
                 error(message) {
                     error_message.value = message;
@@ -185,15 +204,38 @@ export default {
             store.dispatch("getLoginWithQQUrl");
         };
         const loginWithVerificationCode = () => {
-            login_text.value = "登录";
-            return;
-
-            // if (login_phone_number.value == "") {
-            //     $(".login_phone_number input").focus();
-            // } else if (login_verification_code.value == "") {
-            //     $(".login_verification_code input").focus();
-            // }
-            // alert("验证码登录");
+            if (login_phone_number.value == "") {
+                $(".login_phone_number input").focus();
+            } else if (login_verification_code.value == "") {
+                $(".login_verification_code input").focus();
+            }
+            store.dispatch("loginWithVerificationCode", {
+                param: {
+                    PhoneNumber: login_phone_number.value,
+                    VerificationCode: login_verification_code.value
+                },
+                success(result) {
+                    localStorage.setItem("access_token", result.AccessToken);
+                    localStorage.setItem("refresh_token", result.RefreshToken);
+                    store.commit("updateToken", result);
+                    // 获取用户信息
+                    store.dispatch("getUserInfoByUserId", {
+                        success() {
+                            loginAfterSuccess();
+                            // 刷新accessToken
+                            store.dispatch("refreshAccessTokenInterval", {First: false});
+                        },
+                        error(message) {
+                            error_message.value = message;
+                            login_text.value = "登录";
+                        }
+                    });
+                },
+                error(message) {
+                    error_message.value = message;
+                    login_text.value = "登录";
+                }
+            });
         };
         return {
             accountType,

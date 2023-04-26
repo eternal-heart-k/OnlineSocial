@@ -22,7 +22,7 @@
                     <input type="button" v-model="get_verification_code_text" class="btn register_get_verification_code_btn" @click="getVerificationCode">
                 </div>
             </div>
-            <div class="errormsg register_errormsg">账号或密码错误</div>
+            <div class="errormsg register_errormsg">{{ register_error_message_text }}</div>
         </div>
         <div class="register_footer">
             <button class="btn register_confirm_btn" @click="registerConfirm">注册</button>
@@ -35,6 +35,9 @@
 import $ from 'jquery';
 import { ref } from 'vue';
 import { getCurrentInstance } from 'vue';
+import md5 from 'js-md5';
+import { ElMessage } from 'element-plus';
+import { useStore } from 'vuex';
 
 export default {
     name: "RegisterForm",
@@ -44,12 +47,15 @@ export default {
         }
     },
     setup() {
+        const store = useStore();
+        let register_error_message_text = ref("");
         let register_phone_number_value = ref('');
         let register_password_value = ref('');
         let register_password_confirm_value = ref('');
         let register_verification_code_value = ref('');
         const datab = getCurrentInstance();
-        const getVerificationCode = () => {
+        const sendVerificationCodeRegister = () => {
+            ElMessage.success("已发送验证码");
             let tm = 60;
             $('.register_get_verification_code_btn').attr("disabled", true);
             $('.register_get_verification_code_btn').css("color", "grey");
@@ -65,26 +71,55 @@ export default {
                     datab.data.get_verification_code_text = tm + "s后重试";
                 }
             }, 1000);
-        }
-        const registerConfirm = () => {
-            console.log(register_phone_number_value.value, register_password_value.value, register_password_confirm_value.value, register_verification_code_value.value);
-            alert("加速开发中...");
-            // 注册成功
-            // $('.register_form').hide();
-            // $('.login_form').show();
+        };
+        const getVerificationCode = () => {
+            register_error_message_text.value = "";
+            sendVerificationCodeRegister();
+            store.dispatch("sendVerificationCode", {
+                param: {
+                    KeyWord: register_phone_number_value.value,
+                    CommunicationType: 1,
+                    BusinessType: 2
+                },
+                success() {
+                },
+                error(message) {
+                    register_error_message_text.value = message;
+                }
+            });
         };
         const returnLogin = () => {
-            $('.register_form').hide();
-            $('.login_form').show();
+            register_error_message_text.value = "";
             register_phone_number_value.value = "";
             register_password_value.value = "";
             register_password_confirm_value.value = "";
             register_verification_code_value.value = "";
-        }
+            $('.register_form').hide();
+            $('.login_form').show();
+        };
+        const registerConfirm = () => {
+            register_error_message_text.value = "";
+            store.dispatch("registerWithVerificationCode", {
+                param: {
+                    PhoneNumber: register_phone_number_value.value,
+                    Password: register_password_value.value == "" ? "" : md5(register_password_value.value),
+                    PasswordConfirm: register_password_confirm_value.value == "" ? "" : md5(register_password_confirm_value.value),
+                    VerificationCode: register_verification_code_value.value
+                },
+                success() {
+                    ElMessage.success("注册成功");
+                    returnLogin();
+                },
+                error(message) {
+                    register_error_message_text.value = message;
+                }
+            });
+        };
         return {
             getVerificationCode,
             registerConfirm,
             returnLogin,
+            register_error_message_text,
             register_phone_number_value,
             register_password_value,
             register_password_confirm_value,

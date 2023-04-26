@@ -164,7 +164,7 @@ export default {
       });
     };
     const loginShow = () => {
-      $(".login_module").show();
+      store.commit("updateLoginPageVisible", true);
     };
     const goToHotPage = (isFollowedUserPost) => {
       if (!store.state.user.isLogin) {

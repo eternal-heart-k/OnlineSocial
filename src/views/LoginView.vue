@@ -1,5 +1,5 @@
 <template>
-    <div class="login_module" >
+    <div v-show="loginvisible" class="login_module" >
         <div class="login_content">
             <div class="login_head">
                 <button class="btn login_close" @click="closeLoginModule">X</button>
@@ -17,6 +17,9 @@ import $ from 'jquery';
 import LoginForm from '@/components/LoginForm.vue'
 import ForgetPasswordForm from '@/components/ForgetPasswordForm.vue';
 import RegisterForm from '@/components/RegisterForm.vue';
+import { computed } from 'vue';
+import { useStore } from 'vuex';
+import router from '../router';
 
 export default {
     name: "LoginView",
@@ -26,6 +29,7 @@ export default {
         RegisterForm,
     },
     setup() {
+        const store = useStore();
         const hideSth = () => {
             $('.login_verification_code_module').hide();
             $('.forget_password_form').hide();
@@ -33,12 +37,20 @@ export default {
             $('.login_verification_code>input').removeAttr("required");
         };
         const closeLoginModule = () => {
-            $('.login_module').hide();
+            store.commit("updateLoginPageVisible", false);
         };
         const showLoginModule = () => {
-            $('.login_module').show();
+            store.commit("updateLoginPageVisible", true);
         };
+        let loginvisible = computed({
+            get() {
+                return store.state.user.loginPageVisible;
+            },
+            set() {
+            }
+        });
         return {
+            loginvisible,
             hideSth,
             closeLoginModule,
             showLoginModule,
@@ -46,6 +58,11 @@ export default {
     },
     mounted() {
         this.hideSth();
+        const store = useStore();
+        if (store.state.user.isLogin) {
+            store.commit("updateLoginPageVisible", false);
+            router.push({name: 'home'});
+        }
     },
 }
 </script>

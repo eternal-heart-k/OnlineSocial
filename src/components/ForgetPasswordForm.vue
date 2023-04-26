@@ -18,7 +18,7 @@
                     <input type="button" v-model="get_verification_code_text" class="btn forget_password_get_verification_code_btn" @click="getVerificationCode">
                 </div>
             </div>
-            <div class="errormsg forget_password_errormsg">账号或密码错误</div>
+            <div class="errormsg forget_password_errormsg">{{forget_password_error_message_text}}</div>
         </div>
         <div class="forget_password_footer">
             <button class="btn forget_password_confirm_btn" @click="forgetPasswordConfirm">确认</button>
@@ -31,6 +31,9 @@
 import $ from 'jquery';
 import { ref } from 'vue';
 import { getCurrentInstance } from 'vue';
+import md5 from 'js-md5';
+import { ElMessage } from 'element-plus';
+import { useStore } from 'vuex';
 
 export default {
     name: "ForgetPasswordForm",
@@ -40,11 +43,14 @@ export default {
         }
     },
     setup() {
+        const store = useStore();
+        let forget_password_error_message_text = ref("");
         let forget_password_phone_number_value = ref('');
         let forget_password_new_password_value = ref('');
         let forget_password_verification_code_value = ref('');
         const datab = getCurrentInstance();
-        const getVerificationCode = () => {
+        const sendVerificationCodeForgetPassword = () => {
+            ElMessage.success("已发送验证码");
             let tm = 60;
             $('.forget_password_get_verification_code_btn').attr("disabled", true);
             $('.forget_password_get_verification_code_btn').css("color", "grey");
@@ -61,23 +67,51 @@ export default {
                 }
             }, 1000);
         };
-        const forgetPasswordConfirm = () => {
-            console.log(forget_password_phone_number_value.value, forget_password_new_password_value.value, forget_password_verification_code_value.value);
-            alert("正在加速开发中...");
-            // $('.forget_password_form').hide();
-            // $('.login_form').show();
+        const getVerificationCode = () => {
+            forget_password_error_message_text.value = "";
+            sendVerificationCodeForgetPassword();
+            store.dispatch("sendVerificationCode", {
+                param: {
+                    KeyWord: forget_password_phone_number_value.value,
+                    CommunicationType: 1,
+                    BusinessType: 4
+                },
+                success() {
+                },
+                error(message) {
+                    forget_password_error_message_text.value = message;
+                }
+            });
         };
         const returnLogin = () => {
-            $('.forget_password_form').hide();
-            $('.login_form').show();
+            forget_password_error_message_text.value = "";
             forget_password_phone_number_value.value = "";
             forget_password_new_password_value.value = "";
             forget_password_verification_code_value.value = "";
-        }
+            $('.forget_password_form').hide();
+            $('.login_form').show();
+        };
+        const forgetPasswordConfirm = () => {
+            store.dispatch("forgetPasswordWithVerificationCode", {
+                param: {
+                    PhoneNumber: forget_password_phone_number_value.value,
+                    NewPassword: forget_password_new_password_value.value == "" ? "" : md5(forget_password_new_password_value.value),
+                    VerificationCode: forget_password_verification_code_value.value
+                },
+                success() {
+                    ElMessage.success("修改密码成功");
+                    returnLogin();
+                },
+                error(message) {
+                    forget_password_error_message_text.value = message;
+                }
+            });
+        };
         return {
             getVerificationCode,
             forgetPasswordConfirm,
             returnLogin,
+            forget_password_error_message_text,
             forget_password_phone_number_value,
             forget_password_new_password_value,
             forget_password_verification_code_value,

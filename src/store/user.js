@@ -18,6 +18,8 @@ const ModuleUser = {
         fansListVisible: false,
         fansList: [],
         fansListPageIndex: 1,
+
+        loginPageVisible: false,
     },
     getters: {
     },
@@ -63,6 +65,9 @@ const ModuleUser = {
                     break;
                 }
             }
+        },
+        updateLoginPageVisible(state, status) {
+            state.loginPageVisible = status;
         },
     },
     actions: {
@@ -192,6 +197,66 @@ const ModuleUser = {
                 success(resp) {
                     if (resp.IsSuccess) {
                         data.success(resp.Result);
+                    } else {
+                        data.error(resp.Message);
+                    }
+                }
+            });
+        },
+        sendVerificationCode(context, data) {
+            $.ajax({
+                url: context.rootState.urlPre + "/api/verificationcode/send",
+                type: "post",
+                data: JSON.stringify(data.param),
+                contentType: "application/json",
+                success(resp) {
+                    if (resp.IsSuccess) {
+                        data.success();
+                    } else {
+                        data.error(resp.Message);
+                    }
+                }
+            });
+        },
+        loginWithVerificationCode(context, data) {
+            $.ajax({
+                url: context.rootState.urlPre + "/api/user/login/verificationcode",
+                type: "post",
+                data: JSON.stringify(data.param),
+                contentType: "application/json",
+                success(resp) {
+                    if (resp.IsSuccess) {
+                        data.success(resp.Result);
+                    } else {
+                        data.error(resp.Message);
+                    }
+                }
+            });
+        },
+        registerWithVerificationCode(context, data) {
+            $.ajax({
+                url: context.rootState.urlPre + "/api/user/register/phonenumber",
+                type: "post",
+                data: JSON.stringify(data.param),
+                contentType: "application/json",
+                success(resp) {
+                    if (resp.IsSuccess) {
+                        data.success();
+                    } else {
+                        data.error(resp.Message);
+                    }
+                }
+            });
+        },
+        forgetPasswordWithVerificationCode(context, data) {
+            $.ajax({
+                url: context.rootState.urlPre + "/api/user/password/forget",
+                type: "put",
+                data: JSON.stringify(data.param),
+                contentType: "application/json",
+                success(resp) {
+                    if (resp.IsSuccess) {
+                        data.success();
                     } else {
                         data.error(resp.Message);
                     }

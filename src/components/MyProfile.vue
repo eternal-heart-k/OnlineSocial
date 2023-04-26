@@ -85,7 +85,7 @@ export default {
         let personalSignature = computed({
             get() {
                 if (store.state.user.personalSignature == null || store.state.user.personalSignature == "") {
-                    return "个性签名：" + store.state.user.personalSignature;
+                    return "个性签名：" + "暂无个性签名";
                 }
                 return "个性签名：" + store.state.user.personalSignature.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, '&nbsp;');
             },
