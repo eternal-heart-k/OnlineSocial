@@ -59,7 +59,7 @@ export default {
     mounted() {
         let scrollRef = this.$refs.chatScrollRef;
         setTimeout(() => {
-            scrollRef.setScrollTop(1000000000);
+            if (scrollRef) scrollRef.setScrollTop(1000000000);
         }, 100);
     },
     setup() {
@@ -112,7 +112,7 @@ export default {
         };
         const chatScrollToTop = () => {
             setTimeout(() => {
-                chatScrollRef.value.setScrollTop(1000000000);
+                if (chatScrollRef.value) chatScrollRef.value.setScrollTop(1000000000);
             }, 100);
         };
         const sendMessage = () => {
@@ -131,19 +131,19 @@ export default {
                     ReceiveUserId: chatUserId.value, 
                     Content: newMessageText.value
                 };
+                store.commit("updateSocketMessage", message);
                 if (store.state.socket.readyState === 1) {
-                    store.state.socket.send(JSON.stringify(message));
                     store.state.socket.send(JSON.stringify(message));
                 } else if (store.state.socket.readyState === 0) {
                     setTimeout(() => {
                         store.state.socket.send(JSON.stringify(message));
-                    }, 1000);
+                    }, 300);
                 } else {
                     store.dispatch("setWebSocket", {
                         success() {
                             setTimeout(() => {
                                 store.state.socket.send(JSON.stringify(message));
-                            }, 1000);
+                            }, 300);
                         }
                     });
                 }
@@ -206,7 +206,7 @@ export default {
         });
         let chatInputFocus = ref(false);
         const chatInputFocusChange = (status) => {
-            if (status && !chatInputFocus.value) {
+            if (status && !chatInputFocus.value && chatUserId.value) {
                 store.dispatch("updateUserChatReadStatus", {
                     param: {
                         SendUserId: chatUserId.value,

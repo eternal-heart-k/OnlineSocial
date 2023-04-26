@@ -16,6 +16,7 @@ export default createStore({
     nowImagePreview: null,
     addFollowPageType: 0, // 0热门页；1个人空间页
     socket: null,
+    nowMessage: null,
   },
   getters: {
   },
@@ -32,6 +33,9 @@ export default createStore({
     setNewWebSocket(state) {
       state.socket = new WebSocket(`wss://${state.address}/api/websocket/wss`, ["client", state.user.accessToken]);
     },
+    updateSocketMessage(state, data) {
+      state.nowMessage = data;
+    }
   },
   actions: {
     beforeAction(context, data) {
@@ -41,8 +45,20 @@ export default createStore({
       }
       data.func();
     },
+    resendSocketMessage(context) {
+      context.dispatch("setWebSocket", {
+        success() {
+          setTimeout(() => {
+            context.state.socket.send(JSON.stringify(context.state.nowMessage));
+          }, 300);
+        }
+      });
+    },
     setWebSocket(context, data) {
       context.commit("setNewWebSocket");
+      context.rootState.socket.onclose = function () {
+        context.dispatch("resendSocketMessage");
+      };
       context.rootState.socket.onmessage = function(data) {
         let message = JSON.parse(data.data);
         if (message.ReceiveUserId == context.rootState.user.userId) { // 是给自己的

@@ -184,15 +184,15 @@ export default {
                         Content: "感谢您的反馈。管理员已处理了您的反馈：" + handleContent,
                         TargetId: id
                     };
+                    store.commit("updateSocketMessage", message);
                     if (store.state.socket.readyState === 1) {
                         store.state.socket.send(JSON.stringify(message));
-                        store.state.socket.send(JSON.stringify(message));
                     } else if (store.state.socket.readyState === 0) {
-                        setTimeout(() => store.state.socket.send(JSON.stringify(message)), 1000);
+                        setTimeout(() => store.state.socket.send(JSON.stringify(message)), 300);
                     } else {
                         store.dispatch("setWebSocket", {
                             success() {
-                                setTimeout(() => store.state.socket.send(JSON.stringify(message)), 1000);
+                                setTimeout(() => store.state.socket.send(JSON.stringify(message)), 300);
                             }
                         });
                     }
