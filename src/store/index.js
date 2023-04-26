@@ -10,8 +10,8 @@ import ModuleFeedback from './feedback';
 
 export default createStore({
   state: {
-    urlPre: "https://localhost:7030", // "https://kanghui29.cn" "https://localhost:7030"
-    address: "localhost:7030",
+    urlPre: "https://kanghui29.cn", // "https://kanghui29.cn" "https://localhost:7030"
+    address: "kanghui29.cn",
     unAuthorize: "身份认证已过期，请重新登录",
     nowImagePreview: null,
     addFollowPageType: 0, // 0热门页；1个人空间页
@@ -50,6 +50,7 @@ export default createStore({
         success() {
           setTimeout(() => {
             context.state.socket.send(JSON.stringify(context.state.nowMessage));
+            context.commit("updateSocketMessage", null);
           }, 300);
         }
       });
@@ -57,7 +58,7 @@ export default createStore({
     setWebSocket(context, data) {
       context.commit("setNewWebSocket");
       context.rootState.socket.onclose = function (e) {
-        if (e.code == "1006" && e.reason == "") {
+        if (e.code == "1006" && e.reason == "" && context.rootState.nowMessage != null && context.rootState.user.isLogin) {
           context.dispatch("resendSocketMessage");
         }
       };
