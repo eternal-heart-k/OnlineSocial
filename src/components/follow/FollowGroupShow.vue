@@ -14,7 +14,7 @@
                 <el-button type="danger" @click="deleteFollowGroup">删除关注组</el-button>
             </div>
             <el-scrollbar class="follow-group-show">
-                <el-collapse class="follow-group-content" v-model="activeNames" @change="changeFollowInfoStatus">
+                <el-collapse class="follow-group-content" v-model="activeNames">
                     <el-collapse-item 
                         v-for="(followInfos, groupIndex) of followGroupList" 
                         :key="groupIndex" 
@@ -92,13 +92,6 @@ export default {
             set() {
             }
         });
-        const changeFollowInfoStatus = (names) => {
-            console.log(names);
-            // store.commit("updateFollowInfoVisible", {
-            //     Index: index,
-            //     Status: !status
-            // });
-        };
         const cancelFollow = (id) => {
             ElMessageBox.confirm('确定不关注此人？', '提示', {
                 confirmButtonText: '确定',
@@ -136,7 +129,6 @@ export default {
             });
         };
         const changeFollowGroup = (followId, followIndex, groupIndex) => {
-            console.log(followId, followIndex, groupIndex);
             store.commit("refreshSelectValue", {
                 FollowGroupIndex: groupIndex,
                 FollowId: followId,
@@ -207,7 +199,6 @@ export default {
             hotPostUserContentValue,
             getShowContentValue,
             handleClose,
-            changeFollowInfoStatus,
             cancelFollow,
             changeFollowGroup,
             formatGroupName,

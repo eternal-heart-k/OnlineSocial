@@ -39,9 +39,6 @@ const ModuleFollow = {
         refreshFollowGroupList(state, data) {
             state.followGroupList = data;
         },
-        updateFollowInfoVisible(state, data) {
-            state.followGroupList[data.Index].FollowInfoVisible = data.status;
-        },
         updateChangeFollowGroupVisible(state, status) {
             state.changeFollowGroupVisible = status;
         },

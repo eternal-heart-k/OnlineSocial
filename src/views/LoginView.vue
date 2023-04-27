@@ -142,7 +142,6 @@ export default {
 {
     color: red;
     font-size: 12px;
-    height: 12px;
 }
 </style>
 

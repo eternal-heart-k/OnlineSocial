@@ -35,6 +35,9 @@ export default createStore({
     },
     updateSocketMessage(state, data) {
       state.nowMessage = data;
+      setTimeout(() => {
+        state.nowMessage = null;
+      }, 5000);
     }
   },
   actions: {
