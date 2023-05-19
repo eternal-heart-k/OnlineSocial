@@ -177,6 +177,7 @@ export default {
                 });
             }, 50 * 1000);
             store.dispatch("refreshMessagePage");
+            window.location.reload();
         };
         const loginWithPassword = () => {
             if (login_phone_number.value == "") {

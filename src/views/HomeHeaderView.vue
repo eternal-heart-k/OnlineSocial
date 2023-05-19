@@ -8,9 +8,7 @@
     <el-col :span="12">
       <div class="center">
         <div class="box center">
-          <router-link :to="{name: 'home' }">
-            <el-link class="no-select btn" type="primary" :underline="false" target="_blank" :style="{ 'font-size': '17px' }">首页</el-link>
-          </router-link>
+          <el-link class="no-select btn" type="primary" :underline="false" target="_blank" :style="{ 'font-size': '17px' }" @click="toHome">首页</el-link>
         </div>
         <div class="box center">
           <router-link :to="{name: 'hot' }">
@@ -236,6 +234,9 @@ export default {
       set() {
       }
     });
+    const toHome = () => {
+      location.href = "/onlinesocial/";
+    };
     return {
       search,
       ShowEditPost,
@@ -244,6 +245,7 @@ export default {
       loginShow,
       goToHotPage,
       goToMessagePage,
+      toHome,
       searchContent,
       avatarUrl,
       isLogin,
