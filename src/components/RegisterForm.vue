@@ -78,7 +78,6 @@ export default {
                 register_error_message_text.value = "手机号不能为空";
                 return ;
             }
-            sendVerificationCodeRegister();
             store.dispatch("sendVerificationCode", {
                 param: {
                     KeyWord: register_phone_number_value.value,
@@ -86,6 +85,7 @@ export default {
                     BusinessType: 2
                 },
                 success() {
+                    sendVerificationCodeRegister();
                 },
                 error(message) {
                     register_error_message_text.value = message;

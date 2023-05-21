@@ -73,7 +73,6 @@ export default {
                 forget_password_error_message_text.value = "手机号不能为空";
                 return ;
             }
-            sendVerificationCodeForgetPassword();
             store.dispatch("sendVerificationCode", {
                 param: {
                     KeyWord: forget_password_phone_number_value.value,
@@ -81,6 +80,7 @@ export default {
                     BusinessType: 4
                 },
                 success() {
+                    sendVerificationCodeForgetPassword();
                 },
                 error(message) {
                     forget_password_error_message_text.value = message;

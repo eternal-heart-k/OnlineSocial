@@ -128,7 +128,6 @@ export default {
                 error_message.value = "手机号不能为空";
                 return ;
             }
-            sendVerificationCodeLogin();
             store.dispatch("sendVerificationCode", {
                 param: {
                     KeyWord: login_phone_number.value,
@@ -136,6 +135,7 @@ export default {
                     BusinessType: 3
                 },
                 success() {
+                    sendVerificationCodeLogin();
                 },
                 error(message) {
                     error_message.value = message;
