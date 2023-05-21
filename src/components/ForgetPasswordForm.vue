@@ -69,6 +69,10 @@ export default {
         };
         const getVerificationCode = () => {
             forget_password_error_message_text.value = "";
+            if (forget_password_phone_number_value.value == null || forget_password_phone_number_value.value == "") {
+                forget_password_error_message_text.value = "手机号不能为空";
+                return ;
+            }
             sendVerificationCodeForgetPassword();
             store.dispatch("sendVerificationCode", {
                 param: {

@@ -74,6 +74,10 @@ export default {
         };
         const getVerificationCode = () => {
             register_error_message_text.value = "";
+            if (register_phone_number_value.value == null || register_phone_number_value.value == "") {
+                register_error_message_text.value = "手机号不能为空";
+                return ;
+            }
             sendVerificationCodeRegister();
             store.dispatch("sendVerificationCode", {
                 param: {

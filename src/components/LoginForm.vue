@@ -89,6 +89,7 @@ export default {
             login_phone_number.value = "";
             login_password.value = "";
             login_verification_code.value = "";
+            error_message.value = "";
         };
         const verificationCodeType = () => {
             login_user_type.value = 2;
@@ -101,6 +102,7 @@ export default {
             login_phone_number.value = "";
             login_password.value = "";
             login_verification_code.value = "";
+            error_message.value = "";
         };
         const sendVerificationCodeLogin = () => {
             ElMessage.success("已发送验证码");
@@ -122,6 +124,10 @@ export default {
         };
         const getVerificationCode = () => {
             error_message.value = "";
+            if (login_phone_number.value == null || login_phone_number.value == "") {
+                error_message.value = "手机号不能为空";
+                return ;
+            }
             sendVerificationCodeLogin();
             store.dispatch("sendVerificationCode", {
                 param: {
